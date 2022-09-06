@@ -1,0 +1,12 @@
+name: OpenMRS Pipeline
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-openmrs-distribution-file:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.2
