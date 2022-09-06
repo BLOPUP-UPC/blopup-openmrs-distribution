@@ -16,10 +16,10 @@ jobs:
         distribution: temurin
         java-version: 8
     - name: Check maven version
-      run: echo $(mvn --version)
+      run: echo $(./mvnw --version)
     - name: Setup OpenMRS SDK
-      run: mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
+      run: ./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
     - name: Create docker distro
-      run: mvn openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker
+      run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker
     - name: Run command
       run: echo $(cd docker && ls)
