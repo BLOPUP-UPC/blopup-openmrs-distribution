@@ -2,7 +2,11 @@
 https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Creatingdockerconfigurationfordistribution
 
 ```shell
-mvn openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker
+./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker
+```
+
+```shell
+./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
 ```
 
 # Set up remote docker
