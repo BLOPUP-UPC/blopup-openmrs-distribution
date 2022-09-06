@@ -6,7 +6,7 @@ https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Creatingdockerconfi
 ```
 
 ```shell
-./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
+printf '%s\n' n | ./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
 ```
 
 # Set up remote docker

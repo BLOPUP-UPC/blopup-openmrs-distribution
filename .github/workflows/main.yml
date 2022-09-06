@@ -18,7 +18,7 @@ jobs:
     - name: Check maven version
       run: echo $(./mvnw --version)
     - name: Setup OpenMRS SDK
-      run: ./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
+      run: printf '%s\n' n | ./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
     - name: Create docker distro
       run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker
     - name: Run command
