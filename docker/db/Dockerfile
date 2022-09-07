@@ -1,3 +1,3 @@
-FROM mysql:5.6
+FROM mariadb:10.10.1-rc-jammy
 
 COPY generated/dbdump docker-entrypoint-initdb.d
