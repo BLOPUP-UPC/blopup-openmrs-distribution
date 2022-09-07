@@ -23,3 +23,10 @@ jobs:
       run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker/generated
     - name: Run command
       run: echo $(cd docker && ls)
+    - name: Deploy to Docker host
+      uses: wshihadeh/docker-deployment-action@v1
+      with:
+        remote_docker_host: ubuntu@${{ secrets.DOCKER_HOST }}
+        ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+        ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
+        deployment_mode: docker-compose
