@@ -30,3 +30,5 @@ jobs:
         ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
         ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
         deployment_mode: docker-compose
+        stack_file_name: docker/docker-compose.yml
+        args: docker
