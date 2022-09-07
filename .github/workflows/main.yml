@@ -20,6 +20,6 @@ jobs:
     - name: Setup OpenMRS SDK
       run: printf '%s\n' n | ./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
     - name: Create docker distro
-      run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker
+      run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker/generated
     - name: Run command
       run: echo $(cd docker && ls)
