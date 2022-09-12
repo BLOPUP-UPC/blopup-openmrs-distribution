@@ -30,6 +30,6 @@ jobs:
         remote_docker_host: ubuntu@${{ secrets.DOCKER_HOST }}
         ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
         ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-        deployment_mode: docker-compose
+        deployment_mode: docker-swarm
         stack_file_name: docker/docker-compose.yml
-        args: docker
+        args: --publish published=8080,target=8080 docker
