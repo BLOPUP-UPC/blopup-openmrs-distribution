@@ -32,4 +32,4 @@ jobs:
         ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
         deployment_mode: docker-swarm
         stack_file_name: docker/docker-compose.yml
-        args: --publish published=8080,target=8080 docker
+        args: docker
