@@ -5,9 +5,16 @@ on:
   push:
     branches:
       - master
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build-openmrs-distribution-file:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.2
@@ -24,12 +31,27 @@ jobs:
       run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker/generated
     - name: Run command
       run: echo $(cd docker && ls)
-    - name: Deploy to Docker host
-      uses: wshihadeh/docker-deployment-action@v1
+  #   - name: Deploy to Docker host
+  #     uses: wshihadeh/docker-deployment-action@v1
+  #     with:
+  #       remote_docker_host: ubuntu@${{ secrets.DOCKER_HOST }}
+  #       ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+  #       ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
+  #       deployment_mode: docker-swarm
+  #       stack_file_name: docker/docker-compose.yml
+  #       args: docker
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
-        remote_docker_host: ubuntu@${{ secrets.DOCKER_HOST }}
-        ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
-        ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-        deployment_mode: docker-swarm
-        stack_file_name: docker/docker-compose.yml
-        args: docker
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build image
+      run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} -f ./docker/db/Dockerfile ./docker
+
+    - name: Push image
+      run: docker image push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
