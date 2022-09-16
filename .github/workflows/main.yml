@@ -31,7 +31,7 @@ jobs:
       run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker/generated
     - name: Run command
       run: echo $(cd docker && ls)
-    - name: PrepareReg Names
+    - name: Create Image name; Repo name to lower case
       run: |
         echo IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
     - name: Log in to the Container registry
