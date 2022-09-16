@@ -18,16 +18,36 @@ This will be achieved using OpenMRS maven SDK as described [here in the OpenMRS 
 ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker/generated
 ```
 
-## Deploy to a remote docker host
-https://www.docker.com/blog/how-to-deploy-on-remote-docker-hosts-with-docker-compose/
+## Deployment
+This application consist of 2 docker images:
+* OpenMRS client-server distribution
+* Relational database. MySQL (Other can be used such as MariaDB or Postgres)
 
-### Directly
-```shell
-DOCKER_HOST="ssh://[remoteUser]@[remoteHost]" docker-compose up -d
-```
+Docker swarm cluster has been chosen in order to deploy this stack. At first the stack will only be deployed to a single host/node to avoid
+complexity but at the same time being able to easily expand to several nodes. This way it will be possible to scale out the application.
+### Docker swarm
+Remote host should have swarm mode initialized
+* `docker swarm init`
 
-### Docker context
-```shell
-docker context create remote ‐‐docker "host=ssh://[remoteUser]@[remoteHost]"
-```
+To deploy docker stack manually to docker swarm
+* `docker stack deploy -c [compose file name] [service name]`
+
+### Github action to deploy
+THis already available action is used to deploy whit docker swarm:
+https://github.com/wshihadeh/docker-deployment-action
+### SSH
+
+Deployment to the remote host securily from [this Github Actions pipeline](.github/workflows/main.yml) will be done over SSL using private public ssh keys. Those must be available in the Repository Secrets of this repository and also the public key installed in the host machine.
+This secrets must be created in this repo:
+* DOCKER_SSH_PRIVATE_KEY: the private key in pem format
+* DOCKER_SSH_PUBLIC_KEY: the public key fingerprint (this is not the public key). Similar as the one created in `${HOME}/.ssh/known_hosts` when a remote terminal connection is done via ssh.
+* DOCKER_HOST: The ip or the dns name of the remote host
+
+In order to retrieve the public key fingerprint a remote terminal session over ssh can be done. Once the remote host is trusted the public key fingerprint will be placed in `${HOME}/.ssh/known_hosts`.
+1. `cat ${HOME}/.ssh/known_hosts`
+2. Copy the public key fingerprint part. The full entry has the format `[HOST] [public key fingerprint]`. Example of public key fingerprint: 
+
+### References
+* [Remote host deployment](https://www.docker.com/blog/how-to-deploy-on-remote-docker-hosts-with-docker-compose/)
+* [Intro to swarm](https://dockerswarm.rocks/)
 
