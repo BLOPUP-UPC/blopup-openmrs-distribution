@@ -39,7 +39,7 @@ services:
       DB_AUTO_UPDATE: 'false'    # change to 'true' if using an empty database
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
     labels:
-      - traefik.http.routers.web.rule=Host("${DOMAIN}")
+      - traefik.http.routers.web.rule=Host("${DOMAIN:-dummy-domain.org}")
     volumes:
       - web-data:/usr/local/tomcat/.OpenMRS
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
