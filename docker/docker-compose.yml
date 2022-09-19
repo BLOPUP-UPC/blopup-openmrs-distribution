@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  reverse-proxy:
+    image: traefik:v2.8
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   db:
     image: ghcr.io/openmrstest/referenceapplication-db:latest
     build:
@@ -20,10 +30,6 @@ services:
     image: ghcr.io/openmrstest/referenceapplication-server:latest
     depends_on:
       - db
-    ports:
-      - target: 8080
-        published: 8080        
-        mode: host
     environment:
       DB_DATABASE: openmrs
       DB_HOST: db
@@ -32,6 +38,8 @@ services:
       DB_CREATE_TABLES: 'false'  # change to 'true' if using an empty database
       DB_AUTO_UPDATE: 'false'    # change to 'true' if using an empty database
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
+    labels:
+      - traefik.http.routers.web.rule=Host("${DOMAIN}")
     volumes:
       - web-data:/usr/local/tomcat/.OpenMRS
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
