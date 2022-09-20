@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  DOMAIN: "dummy-domain.org"
+  DOMAIN: ${{ secrets.DOMAIN }}
 
 jobs:
   build-openmrs-distribution-file:
