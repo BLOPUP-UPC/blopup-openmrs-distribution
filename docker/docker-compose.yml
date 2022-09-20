@@ -5,7 +5,6 @@ services:
     image: traefik:v2.8
     # Enables the web UI and tells Traefik to listen to docker
     command:
-      - --api.insecure=true
       - --providers.docker
       - --entrypoints.websecure.address=:443
       - --entrypoints.web.address=:80
@@ -15,8 +14,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   db:
@@ -47,7 +44,7 @@ services:
       DB_AUTO_UPDATE: 'false'    # change to 'true' if using an empty database
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
     labels:
-      - traefik.http.routers.web.rule=Host("${DOMAIN:-dummy-domain.org}")
+      - traefik.http.routers.web.rule=Host("${DOMAIN:-localhost}")
     volumes:
       - web-data:/usr/local/tomcat/.OpenMRS
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
