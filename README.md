@@ -26,7 +26,10 @@ To install:
 `brew install pre-commit`
 
 To prepare the hooks:
-`pre-commit install`
+```
+pre-commit install
+pre-commit install --hook-type commit-msg
+```
 
 And done!
 

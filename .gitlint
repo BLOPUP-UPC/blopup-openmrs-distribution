@@ -1,0 +1,6 @@
+[general]
+ignore=body-is-missing
+
+[title-match-regex]
+# force commit title to start with a ticket number
+regex=^\d+: .*
