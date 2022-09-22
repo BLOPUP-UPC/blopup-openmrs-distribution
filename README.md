@@ -6,6 +6,30 @@ That is a OpenMRS client server distribution with the required modules and a dat
 This repo will build and configure both services and package them into Docker images.
 It will also create a Github Action pipeline to automate the above task and deploy the resulting docker stack into a VM using either docker compose or docker swarm technology.
 
+# Table of Contents
+
+* [OpenMRS project distribution](#openmrs-project-distribution)
+* [Table of Contents](#table-of-contents)
+  * [Pre Requisites](#pre-requisites)
+  * [Build docker-compose distro](#build-docker-compose-distro)
+  * [Deployment](#deployment)
+    * [Docker swarm](#docker-swarm)
+    * [Github action to deploy](#github-action-to-deploy)
+    * [SSH](#ssh)
+    * [References](#references)
+
+## Pre Requisites
+This project works with [pre-commit](https://pre-commit.com) in order to
+guarantee certain minimum requirements.
+
+To install:
+`brew install pre-commit`
+
+To prepare the hooks:
+`pre-commit install`
+
+And done!
+
 ## Build docker-compose distro
 This will be achieved using OpenMRS maven SDK as described [here in the OpenMRS documentation](https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Creatingdockerconfigurationfordistribution).
 
@@ -45,9 +69,8 @@ This secrets must be created in this repo:
 
 In order to retrieve the public key fingerprint a remote terminal session over ssh can be done. Once the remote host is trusted the public key fingerprint will be placed in `${HOME}/.ssh/known_hosts`.
 1. `cat ${HOME}/.ssh/known_hosts`
-2. Copy the public key fingerprint part. The full entry has the format `[HOST] [public key fingerprint]`. Example of public key fingerprint: 
+2. Copy the public key fingerprint part. The full entry has the format `[HOST] [public key fingerprint]`. Example of public key fingerprint:
 
 ### References
 * [Remote host deployment](https://www.docker.com/blog/how-to-deploy-on-remote-docker-hosts-with-docker-compose/)
 * [Intro to swarm](https://dockerswarm.rocks/)
-
