@@ -6,8 +6,6 @@ on:
     branches:
       - master
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
   DOMAIN: ${{ secrets.DOMAIN }}
 
 jobs:
@@ -19,42 +17,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.2
-    - name: Setup java version
-      uses: actions/setup-java@v2
-      with:
-        distribution: temurin
-        java-version: 8
-    - name: Check maven version
-      run: echo $(./mvnw --version)
-    - name: Setup OpenMRS SDK
-      run: printf '%s\n' n | ./mvnw org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
-    - name: Create docker distro
-      run: ./mvnw openmrs-sdk:build-distro -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker/generated
-    - name: Run command
-      run: echo $(cd docker && ls)
-    - name: Create Image name; Repo name to lower case
-      run: |
-        echo IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
-    - name: Log in to the Container registry
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build docker images
-      run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-db -f ./docker/db/Dockerfile ./docker
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server -f ./docker/generated/web/Dockerfile ./docker/generated/web
-    - name: Push docker images to Github container registry
-      run: |
-        docker image push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-db
-        docker image push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server
     - name: Deploy to Docker host
       uses: wshihadeh/docker-deployment-action@v1
       with:
-        remote_docker_host: ubuntu@${{ secrets.DOCKER_HOST }}
+        remote_docker_host: deployment@${{ secrets.DOCKER_HOST }}
         ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
         ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-        deployment_mode: docker-swarm
+        deployment_mode: docker-compose
         stack_file_name: docker/docker-compose.yml
         args: docker

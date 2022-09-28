@@ -11,16 +11,16 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.websecure.http.tls
+      - --certificatesresolvers.blopupresolver.acme.storage=/acme/acme.json
+      - --certificatesresolvers.blopupresolver.acme.httpchallenge.entrypoint=web
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - reverse-proxy-data:/acme
   db:
-    image: ghcr.io/openmrstest/referenceapplication-db:latest
-    build:
-      context: ./
-      dockerfile: ./db/Dockerfile
+    image: mysql:5.6
     command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
     environment:
       MYSQL_DATABASE: openmrs
@@ -31,8 +31,7 @@ services:
       - db-data:/var/lib/mysql
 
   web:
-    build: generated/web
-    image: ghcr.io/openmrstest/referenceapplication-server:latest
+    image: openmrs/openmrs-reference-application-distro:2.12.2
     depends_on:
       - db
     environment:
@@ -40,11 +39,13 @@ services:
       DB_HOST: db
       DB_USERNAME: openmrs
       DB_PASSWORD: Admin123
-      DB_CREATE_TABLES: 'false'  # change to 'true' if using an empty database
-      DB_AUTO_UPDATE: 'false'    # change to 'true' if using an empty database
+      DB_CREATE_TABLES: 'true'   # change to 'true' if using an empty database
+      DB_AUTO_UPDATE: 'true'     # change to 'true' if using an empty database
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
     labels:
       - traefik.http.routers.web.rule=Host("${DOMAIN:-localhost}")
+      - traefik.http.routers.web.tls=true
+      - traefik.http.routers.web.tls.certresolver=blopupresolver
     volumes:
       - web-data:/usr/local/tomcat/.OpenMRS
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
@@ -53,3 +54,4 @@ services:
 volumes:
   db-data:
   web-data:
+  reverse-proxy-data:
