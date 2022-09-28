@@ -17,12 +17,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.2
-    - name: Deploy to Docker host
-      uses: wshihadeh/docker-deployment-action@v1
+    - name: Create .env file
+      run: |
+        echo "DOMAIN=\"$DOMAIN\"" >> .env
+    - uses: alex-ac/github-action-ssh-docker-compose@master
+      name: Docker-Compose Remote Deployment
       with:
-        remote_docker_host: deployment@${{ secrets.DOCKER_HOST }}
+        ssh_host: blopup.upc.edu
         ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
-        ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-        deployment_mode: docker-compose
-        stack_file_name: docker/docker-compose.yml
-        args: docker
+        ssh_user: deployment
+        ssh_port: "22"
+        docker_compose_prefix: blopup
