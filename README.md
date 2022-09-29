@@ -41,13 +41,7 @@ This application consist of 3 docker images:
 Deployment to the remote host securily from [this Github Actions pipeline](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/blob/master/.github/workflows/main.yml) will be done over SSL using private public ssh keys. Those must be available in the Repository Secrets of this repository and also the public key installed in the host machine.
 This secrets must be created in this repo:
 * DOCKER_SSH_PRIVATE_KEY: the private key in pem format
-* DOCKER_SSH_PUBLIC_KEY: the public key fingerprint (this is not the public key). Similar as the one created in `${HOME}/.ssh/known_hosts` when a remote terminal connection is done via ssh.
-* DOCKER_HOST: The ip or the dns name of the remote host
-
-In order to retrieve the public key fingerprint a remote terminal session over ssh can be done. Once the remote host is trusted the public key fingerprint will be placed in `${HOME}/.ssh/known_hosts`.
-1. `cat ${HOME}/.ssh/known_hosts`
-2. Copy the public key fingerprint part. The full entry has the format `[HOST] [public key fingerprint]`. Example of public key fingerprint:
+* DOMAIN: The dns name of the remote host
 
 ### References
 * [Remote host deployment](https://www.docker.com/blog/how-to-deploy-on-remote-docker-hosts-with-docker-compose/)
-* [Intro to swarm](https://dockerswarm.rocks/)
