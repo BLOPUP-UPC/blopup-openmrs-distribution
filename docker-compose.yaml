@@ -27,6 +27,8 @@ services:
       MYSQL_ROOT_PASSWORD: Admin123
       MYSQL_USER: openmrs
       MYSQL_PASSWORD: Admin123
+    ports:
+      - "3307:3306"
     volumes:
       - db-data:/var/lib/mysql
 
