@@ -42,7 +42,7 @@ To create the database dump use the below command (we need to change the databas
 ```
 $ mysqldump -u root -p database_name > database_name.sql
 ```
-
+ 
 ## Development
 
 To start both containers:
