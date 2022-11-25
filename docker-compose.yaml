@@ -20,8 +20,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - reverse-proxy-data:/acme
   db:
-    image: mysql:5.6
-    command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
+    image: mariadb:10.10.2
+    command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --upgrade=FORCE"
     environment:
       MYSQL_DATABASE: openmrs
       MYSQL_ROOT_PASSWORD: Admin123
