@@ -2,9 +2,7 @@ name: OpenMRS Pipeline
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
+
 env:
   DOMAIN: ${{ secrets.DOMAIN }}
 
