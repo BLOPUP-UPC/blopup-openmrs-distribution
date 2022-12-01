@@ -95,7 +95,8 @@ $ mvn openmrs-sdk:build-distro -e -Ddistro=src/main/resources/openmrs-distro.pro
 
 The previous statement generates all the necessary files to create the docker image in the `-Ddir` folder.
 
-| WARNING: All files on the -Ddir folder will be **REMOVED** and recreated. |
+> **Warning**
+> All files on the -Ddir folder will be **REMOVED** and recreated.
 
 ## Docker repository
 We have a free [docker hub account](https://hub.docker.com/repository/docker/blopup/openmrs-referenceapplication) to host all docker images.

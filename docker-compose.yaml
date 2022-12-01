@@ -33,7 +33,7 @@ services:
       - db-data:/var/lib/mysql
 
   web:
-    image: blopup/openmrs-referenceapplication:1.0.0
+    image: blopup/openmrs-referenceapplication:1.1.0
     depends_on:
       - db
     environment:

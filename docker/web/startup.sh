@@ -7,7 +7,7 @@ DEBUG=${DEBUG:-false}
 
 cat > /usr/local/tomcat/openmrs-server.properties << EOF
 install_method=auto
-connection.url=jdbc\:mariadb\://${DB_HOST}\:3306/${DB_DATABASE}?autoReconnect\=true&sessionVariables\=default_storage_engine\=InnoDB&useUnicode\=true&characterEncoding\=UTF-8
+connection.url=jdbc\:mysql\://${DB_HOST}\:3306/${DB_DATABASE}?autoReconnect\=true&sessionVariables\=default_storage_engine\=InnoDB&useUnicode\=true&characterEncoding\=UTF-8
 connection.username=${DB_USERNAME}
 connection.password=${DB_PASSWORD}
 has_current_openmrs_database=true
@@ -23,10 +23,6 @@ echo "-----------------------------------"
 
 # wait for mysql to initialise
 /usr/local/tomcat/wait-for-it.sh --timeout=3600 ${DB_HOST}:3306
-
-echo "------  Upgrading mysql  -----"
-#mysql_upgrade -u ${MYSQL_USER} -p ${MYSQL_ROOT_PASSWORD}
-echo "-----------------------------------"
 
 if [ $DEBUG ]; then
     export JPDA_ADDRESS="1044"
