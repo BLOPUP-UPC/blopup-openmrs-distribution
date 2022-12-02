@@ -15,7 +15,9 @@ This repo will deploy the OpenMRS application in a remote host via ssh using Git
   * [Multi-architecture image push](#multi-architecture-image-push)
 * [Database backup](#database-backup)
 * [Deployment](#deployment)
+  * [Environments to deploy](#environments-to-deploy)
   * [SSH](#ssh)
+  * [Deployment user](#deployment-user)
 
 # Development Pre Requisites
 ## Pre-commit
@@ -108,7 +110,7 @@ By default, all images are generated with the local machine architecture. To do 
 
 To push an image compatible with linux/amd64 and linux/arm64 architecture:
 ```
-$ docker buildx build --push --platform linux/amd64,linux/arm64 --tag blopup/openmrs-referenceapplication:1.0.0 .
+$ docker buildx build --push --platform linux/amd64,linux/arm64 --tag blopup/openmrs-referenceapplication:tag .
 ```
 
 The general syntax:
@@ -127,8 +129,58 @@ After generating the dump, you can execute the sql commands in the new database.
 This application consist of 3 docker images:
 * Traefik as a reverse-proxy
 * OpenMRS client-server distribution
-* Relational database. MariaDB(10.10.2 at the time of writing) 
+* Relational database. MariaDB(10.10.2 at the time of writing)
+
+## Environments to deploy
+To use the same pipeline for different environments add ```input``` attribute in your pipeline. This attribute must be choice type. Moreover, in options parameter it's needed to add the different environments.
+```
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Select environment
+        options:
+          - blopup-dev.upc.edu     #environment1
+          - blopup-staging.upc.edu #environment2
+```
 
 ## SSH
 Deployment to the remote host from [this Github Actions pipeline](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/blob/master/.github/workflows/main.yml) will be done securily over SSL using ssh keys. We have created a deployment user in the remote host and added an SSH key. The private key content must be stored in the GitHub Secrets like this:
 * DOCKER_SSH_PRIVATE_KEY: the private key in pem format
+
+
+## Deployment user
+To create a new user follow the next steps in this section, inside the remote host.
+```
+$ useradd deployment 
+$ mkdir -p /home/deployment/.ssh
+$ chown -R deployment /home/deployment # To add permissions
+```
+
+After that, add the user to the corresponding group.
+```
+$ sudo usermod -aG docker deployment
+$ newgrp docker #apply new changes
+```
+
+> **Note**
+> Use `groups` to see if group it was created.
+> For more information about groups, click [here](https://phoenixnap.com/kb/docker-permission-denied)
+
+Now, we have to create an SSH key for the deployment user. 
+```
+$ ssh-keygen -C "$(whoami)@blopup.upc.edu"
+```
+This will prompt you for the key name and the passphrase. 
+
+> **Note**
+> In non-prod environment we left the passphrase empty
+
+We have to create an `authorized-keys` file and copy the public key inside. 
+
+```
+$ cat <key_name>.pub > authorized-keys 
+```
+
+The content of the private key must be stored in a GitHub secret named `DOCKER_SSH_PRIVATE_KEY`.
