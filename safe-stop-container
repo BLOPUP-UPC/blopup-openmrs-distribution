@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ $(docker ps | grep $1 | wc -l) -gt 0 ];
+then
+  echo "deleting $1 container"
+  docker container stop $1
+else
+  echo "container $1 does not exits or it is not running"
+fi

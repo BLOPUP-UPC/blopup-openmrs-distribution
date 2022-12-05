@@ -42,10 +42,13 @@ jobs:
           scp docker-compose.yaml remote:/home/$SSH_USER
           scp .env remote:/home/$SSH_USER
       - name: Remove previous docker containers
-        run: |         
-          ssh remote "if $(docker ps -f name=blopup-db-1 -f status=running); then docker container stop blopup-db-1; fi"
-          ssh remote "if $(docker ps -f name=blopup-web-1); then docker container stop blopup-web-1; fi"
-          ssh remote "if $(docker ps -f name=blopup-reverse-proxy-1); then docker container stop blopup-reverse-proxy-1; fi"
+        run: |
+          scp safe-stop-container remote:/home/$SSH_USER
+          ssh remote chmod +x safe-stop-container
+          ssh remote ./safe-stop-container blopup-db-1
+          ssh remote ./safe-stop-container blopup-web-1
+          ssh remote ./safe-stop-container blopup-reverse-proxy-1
+          ssh remote rm safe-stop-container
           ssh remote docker system prune -a -f
       - name: Deploy
         run: |
