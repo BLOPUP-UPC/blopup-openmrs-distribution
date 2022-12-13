@@ -13,6 +13,8 @@ on:
 env:
   SSH_USER: deployment
   SSH_HOST: ${{ github.event.inputs.environment }}
+  GITHUB_USER: ${{ secrets.CONFIG_GITHUB_USER }}
+  GITHUB_PASSWORD: ${{ secrets.CONFIG_GITHUB_TOKEN }}
 
 jobs:
   deploy:
@@ -37,6 +39,8 @@ jobs:
       - name: Create docker .env file
         run: |
           echo "DOMAIN=\"$SSH_HOST\"" >> .env
+          echo "GITHUB_USER=\"$GITHUB_USER\"" >> .env
+          echo "GITHUB_PASSWORD=\"$GITHUB_PASSWORD\"" >> .env
       - name: Copy deploy files to remote host
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
@@ -48,6 +52,7 @@ jobs:
           ssh remote ./safe-stop-container blopup-db-1
           ssh remote ./safe-stop-container blopup-web-1
           ssh remote ./safe-stop-container blopup-reverse-proxy-1
+          ssh remote ./safe-stop-container blopup-socket-proxy-1
           ssh remote rm safe-stop-container
           ssh remote docker system prune -a -f
       - name: Deploy

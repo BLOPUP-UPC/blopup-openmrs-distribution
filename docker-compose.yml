@@ -65,6 +65,19 @@ services:
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
       - /usr/local/tomcat/.OpenMRS/owa/     # used to mount persistent docker volume for owa
 
+  config:
+    image: blopup/blopup-config-server:2.0.0
+    environment:
+      GITHUB_USER: ${GITHUB_USER}
+      GITHUB_PASSWORD: ${GITHUB_PASSWORD}
+    ports:
+      - "8081:8080"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.config.rule=Host(`${DOMAIN:-localhost}`) && PathPrefix(`/config`)
+      - traefik.http.routers.config.middlewares=config-stripprefix
+      - traefik.http.middlewares.config-stripprefix.stripprefix.prefixes=/config
+
 volumes:
   db-data:
   web-data:

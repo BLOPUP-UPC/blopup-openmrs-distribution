@@ -57,6 +57,9 @@ services:
 
   config:
     image: blopup/blopup-config-server:latest
+    environment:
+      GITHUB_USER: ${GITHUB_USER}
+      GITHUB_PASSWORD: ${GITHUB_PASSWORD}
     ports:
       - "8081:8080"
     labels:
