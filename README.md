@@ -18,6 +18,10 @@ This repo will deploy the OpenMRS application in a remote host via ssh using Git
   * [Environments to deploy](#environments-to-deploy)
   * [SSH](#ssh)
   * [Deployment user](#deployment-user)
+* [Traefik](#traefik)
+  * [Routing](#routing)
+  * [Docker socket](#docker-socket)
+    * [Symlink the default docker socket to the colima socket](#symlink-the-default-docker-socket-to-the-colima-socket)
 
 # Development Pre Requisites
 ## Pre-commit
@@ -184,3 +188,47 @@ $ cat <key_name>.pub > authorized-keys
 ```
 
 The content of the private key must be stored in a GitHub secret named `DOCKER_SSH_PRIVATE_KEY`.
+
+# Traefik
+
+Traefik is used as a reverse proxy and for SSL with Let's encrypt. The reverse proxy redirects all http traffic to https and it routes some paths to different docker containers.
+
+## Routing
+
+We are currently routing two different backend applications. Openmrs itself and the [blopup config server](https://github.com/BLOPUP-UPC/blopup-config-server). Internally, openmrs runs in port 8080 and the config server runs in port 8081. Traefik is redirecting all calls to the root path to the openmrs tomcat and all calls to the `/config` path to the config server.
+
+To configure routing to new apps, you just need to add some labels to the service in the `docker-compose.yml` file.
+
+```yaml
+- traefik.enable=true 
+- traefik.http.routers.{name-of-app}.rule=Host(`${DOMAIN:-localhost}`) && PathPrefix(`/$PATH_TO_APP`)
+- traefik.http.routers.{name-of-app}.middlewares={name-of-app}-stripprefix
+- traefik.http.middlewares.{name-of-app}-stripprefix.stripprefix.prefixes=/$PATH_TO_APP
+```
+
+## Docker socket
+
+Traefik is docker aware. This means that it connects to the docker socket running on the host machine to query the active containers for the routing. This is a security issue since, by default, it has no limitations on the docker API. To solve this, we've followed [these steps](https://medium.com/@containeroo/traefik-2-0-paranoid-about-mounting-var-run-docker-sock-22da9cb3e78c) and we've added a docker socket proxy image that exposes a read-only docker API.
+
+The docker socket proxy uses the host docker socket and exposes it with some configurable limitations (in our case, we only expose the container API). 
+
+> **Warning**
+> If you are using colima as a docker runtime in your host machine, you need to make sure that there is a symlink to the colima socket under the `/var/run/docker.sock` path. If the `/var/run/docker.sock` does not exist follow the steps below
+
+### Symlink the default docker socket to the colima socket
+
+```shell
+> cd /var/run
+> sudo ln -s ~/.colima/docker.sock docker.sock
+```
+
+The colima socket is usually under the `~/.colima/docker.sock` path, but you can run a `colima status` to check if it is there.
+
+```shell
+> colima status
+INFO[0000] colima is running
+INFO[0000] arch: x86_64
+INFO[0000] runtime: docker
+INFO[0000] mountType: sshfs
+INFO[0000] socket: unix:///Users/your_user_name/.colima/default/docker.sock
+```

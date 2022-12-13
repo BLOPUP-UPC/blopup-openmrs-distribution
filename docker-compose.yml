@@ -1,13 +1,26 @@
 version: '3.8'
 
 services:
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      CONTAINERS: 1
+
   reverse-proxy:
     image: traefik:v2.8
-    # Enables the web UI and tells Traefik to listen to docker
     command:
+      # Docker config
       - --providers.docker
-      - --entrypoints.websecure.address=:443
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
+      - --providers.docker.watch=true
+      - --providers.docker.exposedbydefault=false
+      # Entrypoints
       - --entrypoints.web.address=:80
+      # SSL
+      - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.websecure.http.tls
@@ -17,8 +30,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - reverse-proxy-data:/acme
+
   db:
     image: mariadb:10.10.2
     command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
@@ -34,8 +47,6 @@ services:
 
   web:
     image: blopup/openmrs-referenceapplication:1.1.0
-    depends_on:
-      - db
     environment:
       DB_DATABASE: openmrs
       DB_HOST: db
@@ -45,7 +56,8 @@ services:
       DB_AUTO_UPDATE: 'true'     # change to 'true' if using an empty database
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
     labels:
-      - traefik.http.routers.web.rule=Host("${DOMAIN:-localhost}")
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`${DOMAIN:-localhost}`)
       - traefik.http.routers.web.tls=true
       - traefik.http.routers.web.tls.certresolver=blopupresolver
     volumes:

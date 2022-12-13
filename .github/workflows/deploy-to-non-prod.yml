@@ -39,7 +39,7 @@ jobs:
           echo "DOMAIN=\"$SSH_HOST\"" >> .env
       - name: Copy deploy files to remote host
         run: |
-          scp docker-compose.yaml remote:/home/$SSH_USER
+          scp docker-compose.yml remote:/home/$SSH_USER
           scp .env remote:/home/$SSH_USER
       - name: Remove previous docker containers
         run: |
