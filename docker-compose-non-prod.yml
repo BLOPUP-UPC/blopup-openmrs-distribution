@@ -17,6 +17,8 @@ services:
   web:
     environment:
       DB_HOST: db
+      DB_USERNAME: openmrs
+      DB_PASSWORD: Admin123
       DB_CREATE_TABLES: 'true'   # change to 'true' if using an empty database
       DB_AUTO_UPDATE: 'true'     # change to 'true' if using an empty database
 

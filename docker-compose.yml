@@ -36,8 +36,6 @@ services:
     image: blopup/openmrs-referenceapplication:1.1.0
     environment:
       DB_DATABASE: openmrs
-      DB_USERNAME: openmrs
-      DB_PASSWORD: Admin123
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
     labels:
       - traefik.enable=true
