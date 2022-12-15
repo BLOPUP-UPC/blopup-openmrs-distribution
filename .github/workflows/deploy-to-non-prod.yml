@@ -42,6 +42,7 @@ jobs:
       - name: Copy deploy files to remote host
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
+          scp docker-compose-non-prod.yml remote:/home/$SSH_USER
           scp .env remote:/home/$SSH_USER
       - name: Remove previous docker containers
         run: |
