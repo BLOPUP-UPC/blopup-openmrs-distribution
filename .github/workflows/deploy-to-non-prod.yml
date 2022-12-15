@@ -13,8 +13,6 @@ on:
 env:
   SSH_USER: deployment
   SSH_HOST: ${{ github.event.inputs.environment }}
-  GITHUB_USER: ${{ secrets.CONFIG_GITHUB_USER }}
-  GITHUB_PASSWORD: ${{ secrets.CONFIG_GITHUB_TOKEN }}
 
 jobs:
   deploy:
@@ -54,7 +52,7 @@ jobs:
           ssh remote ./safe-stop-container blopup-reverse-proxy-1
           ssh remote ./safe-stop-container blopup-socket-proxy-1
           ssh remote rm safe-stop-container
-          ssh remote docker system prune -a -f
+          ssh remote docker system prune -af
       - name: Deploy
         run: |
-          ssh remote docker compose -p blopup up -d --build
+          ssh remote docker compose -f docker-compose.yml -f docker-compose-non-prod.yml -p blopup up -d --build
