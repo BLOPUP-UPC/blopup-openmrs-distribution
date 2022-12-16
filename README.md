@@ -22,6 +22,7 @@ This repo will deploy the OpenMRS application in a remote host via ssh using Git
   * [Routing](#routing)
   * [Docker socket](#docker-socket)
     * [Symlink the default docker socket to the colima socket](#symlink-the-default-docker-socket-to-the-colima-socket)
+* [Troubleshooting](#troubleshooting)
 
 # Development Pre Requisites
 ## Pre-commit
@@ -232,3 +233,57 @@ INFO[0000] runtime: docker
 INFO[0000] mountType: sshfs
 INFO[0000] socket: unix:///Users/your_user_name/.colima/default/docker.sock
 ```
+
+# Troubleshooting
+
+**Problem**
+
+OpenMRS does not start and in the logs you can see something like
+
+```shell
+App 'referenceapplication.registrationapp.registerPatient' says its an instanceOf 'registrationapp.registerPatient' but there is no AppTemplate with that id
+```
+
+**Cause**
+
+This error means that the character set and collation of the database is not set correctly. Openmrs expects a value of utf8 for character and utf8_general_ci for collation.
+
+**Solution**
+
+If you are using a dockerised database, make sure to include this in the `command` section of the image:
+
+```yaml
+command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
+```
+
+If you are using a database in another host or in your local machine, execute this SQL commands in the database directly:
+
+```mysql
+SET character_set_server = 'utf-8';
+SET collation_server = 'utf8_general_ci';
+```
+
+**Problem**
+OpenMRS does not start and in the logs you can see something like
+
+```shell
+1 change sets check sum
+          liquibase.xml::daa579e7-b8de-4858-bfe5-c9ef2606db5e::Samuel Male was: 8:8c0e70ceade1a06bd939857cc4d82841 but is now: 8:fa0293619384334f16e246e0aab32df7
+```
+
+**Cause**
+
+The md5sum of liquibase in your database is different from the one in the repository changeset.
+
+This usually happens when you load a database dump from and old version of openmrs to a newer version.
+
+**Solution**
+
+You can try updating the relevant module or service version or you can just change the md5sum in your database for the correct one. In the case of the example above, you should need to run this SQL command
+
+```mysql
+UPDATE openmrs.liquibasechangelog SET MD5SUM = '8:fa0293619384334f16e246e0aab32df7' WHERE MD5SUM = '8:8c0e70ceade1a06bd939857cc4d82841';
+```
+
+> **Warning**
+> Be very careful when updating a database manually. Never autocommit and make sure that only one row is affected before committing the database transaction.
