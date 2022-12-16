@@ -6,8 +6,8 @@ on:
 env:
   SSH_USER: deployment
   SSH_HOST: blopup.upc.edu
-  GITHUB_USER: ${{ secrets.GITHUB_USER }}
-  GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_USER: ${{ secrets.CONFIG_GITHUB_USER }}
+  GITHUB_PASSWORD: ${{ secrets.CONFIG_GITHUB_TOKEN }}
   DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
   DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
 
