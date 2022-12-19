@@ -6,10 +6,6 @@ on:
 env:
   SSH_USER: deployment
   SSH_HOST: blopup.upc.edu
-  GITHUB_USER: ${{ secrets.CONFIG_GITHUB_USER }}
-  GITHUB_PASSWORD: ${{ secrets.CONFIG_GITHUB_TOKEN }}
-  DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
-  DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
 
 jobs:
   deploy:
@@ -38,6 +34,17 @@ jobs:
           echo "GITHUB_PASSWORD=\"$GITHUB_PASSWORD\"" >> .env
           echo "DB_USERNAME=\"$DB_USERNAME\"" >> .env
           echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> .env
+          echo "CONFIG_USER=\"CONFIG_USER\"" >> .env
+          echo "CONFIG_PASSWORD=\"CONFIG_PASSWORD\"" >> .env
+          echo "ENCRYPT_KEY=\"ENCRYPT_KEY\"" >> .env
+        env:
+          GITHUB_USER: ${{ secrets.GITHUB_USER }}
+          GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          CONFIG_USER: ${{ secrets.CONFIG_USER }}
+          CONFIG_PASSWORD: ${{ secrets.CONFIG_PASSWORD }}
+          ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
       - name: Copy deploy files to remote host
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
