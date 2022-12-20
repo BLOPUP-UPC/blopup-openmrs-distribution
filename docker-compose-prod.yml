@@ -12,7 +12,7 @@ services:
       - host.docker.internal:host-gateway
 
   config:
-    image: blopup/blopup-config-server:3.0.0
+    image: blopup/blopup-config-server:3.1.0
     environment:
       GITHUB_USER: ${GITHUB_USER}
       GITHUB_PASSWORD: ${GITHUB_PASSWORD}
