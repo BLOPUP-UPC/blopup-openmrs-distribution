@@ -60,6 +60,9 @@ services:
     environment:
       GITHUB_USER: ${GITHUB_USER}
       GITHUB_PASSWORD: ${GITHUB_PASSWORD}
+      CONFIG_USER: ${CONFIG_USER}
+      CONFIG_PASSWORD: ${CONFIG_PASSWORD}
+      ENCRYPT_KEY: ${ENCRYPT_KEY}
     ports:
       - "8081:8080"
     labels:

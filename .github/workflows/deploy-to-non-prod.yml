@@ -37,8 +37,6 @@ jobs:
       - name: Create docker .env file
         run: |
           echo "DOMAIN=\"$SSH_HOST\"" >> .env
-          echo "GITHUB_USER=\"$GITHUB_USER\"" >> .env
-          echo "GITHUB_PASSWORD=\"$GITHUB_PASSWORD\"" >> .env
       - name: Copy deploy files to remote host
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER

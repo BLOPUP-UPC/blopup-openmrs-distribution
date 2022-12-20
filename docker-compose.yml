@@ -39,7 +39,7 @@ services:
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=Host(`${DOMAIN:-localhost}`)
+      - traefik.http.routers.web.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.web.tls=true
       - traefik.http.routers.web.tls.certresolver=blopupresolver
     volumes:
