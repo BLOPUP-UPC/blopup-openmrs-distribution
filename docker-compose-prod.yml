@@ -3,26 +3,10 @@ version: '3.8'
 services:
   web:
     environment:
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DATABASE_USERNAME}
+      DB_PASSWORD: ${DATABASE_PASSWORD}
       DB_HOST: host.docker.internal
       DB_CREATE_TABLES: 'false'   # change to 'true' if using an empty database
       DB_AUTO_UPDATE: 'false'     # change to 'true' if using an empty database
     extra_hosts:
       - host.docker.internal:host-gateway
-
-  config:
-    image: blopup/blopup-config-server:3.1.0
-    environment:
-      GITHUB_USER: ${GITHUB_USER}
-      GITHUB_PASSWORD: ${GITHUB_PASSWORD}
-      CONFIG_USER: ${CONFIG_USER}
-      CONFIG_PASSWORD: ${CONFIG_PASSWORD}
-      ENCRYPT_KEY: ${ENCRYPT_KEY}
-    ports:
-      - "8081:8080"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.config.rule=Host(`${DOMAIN:-localhost}`) && PathPrefix(`/config`)
-      - traefik.http.routers.config.middlewares=config-stripprefix
-      - traefik.http.middlewares.config-stripprefix.stripprefix.prefixes=/config

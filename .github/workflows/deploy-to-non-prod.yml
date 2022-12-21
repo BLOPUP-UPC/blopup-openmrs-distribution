@@ -11,8 +11,8 @@ on:
           - blopup-staging.upc.edu
 
 env:
-  SSH_USER: deployment
-  SSH_HOST: ${{ github.event.inputs.environment }}
+  SSH_USER: ${{ secrets.SSH_USER }}
+  ENV: ${{ github.event.inputs.environment }}
 
 jobs:
   deploy:
@@ -27,16 +27,18 @@ jobs:
           chmod 600 ~/.ssh/remote.key
           cat >>~/.ssh/config <<END
           Host remote
-            HostName $SSH_HOST
+            HostName $ENV
             User $SSH_USER
             IdentityFile ~/.ssh/remote.key
             StrictHostKeyChecking no
           END
         env:
-          SSH_KEY: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          SSH_KEY: ${{ secrets.NON_PROD_SSH_PRIVATE_KEY }}
       - name: Create docker .env file
         run: |
-          echo "DOMAIN=\"$SSH_HOST\"" >> .env
+          echo "$ENV_FILE" > .env
+        env:
+          ENV_FILE: ${{ (contains(env.ENV,'dev') && secrets.DEV_ENV_FILE) || secrets.STAGING_ENV_FILE }}
       - name: Copy deploy files to remote host
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
@@ -48,8 +50,6 @@ jobs:
           ssh remote chmod +x safe-stop-container
           ssh remote ./safe-stop-container blopup-db-1
           ssh remote ./safe-stop-container blopup-web-1
-          ssh remote ./safe-stop-container blopup-reverse-proxy-1
-          ssh remote ./safe-stop-container blopup-socket-proxy-1
           ssh remote rm safe-stop-container
           ssh remote docker system prune -af
       - name: Deploy

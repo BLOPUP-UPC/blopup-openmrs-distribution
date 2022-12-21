@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  SSH_USER: deployment
-  SSH_HOST: blopup.upc.edu
+  SSH_USER: ${{ secrets.SSH_USER }}
+  ENV: blopup.upc.edu
 
 jobs:
   deploy:
@@ -20,7 +20,7 @@ jobs:
           chmod 600 ~/.ssh/remote.key
           cat >>~/.ssh/config <<END
           Host remote
-            HostName $SSH_HOST
+            HostName $ENV
             User $SSH_USER
             IdentityFile ~/.ssh/remote.key
             StrictHostKeyChecking no
@@ -29,22 +29,9 @@ jobs:
           SSH_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
       - name: Create docker .env file
         run: |
-          echo "DOMAIN=\"$SSH_HOST\"" >> .env
-          echo "GITHUB_USER=\"$GITHUB_USER\"" >> .env
-          echo "GITHUB_PASSWORD=\"$GITHUB_PASSWORD\"" >> .env
-          echo "DB_USERNAME=\"$DB_USERNAME\"" >> .env
-          echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> .env
-          echo "CONFIG_USER=\"$CONFIG_USER\"" >> .env
-          echo "CONFIG_PASSWORD=\"$CONFIG_PASSWORD\"" >> .env
-          echo "ENCRYPT_KEY=\"$ENCRYPT_KEY\"" >> .env
+          echo "$ENV_FILE" > .env
         env:
-          GITHUB_USER: ${{ secrets.CONFIG_GITHUB_USER }}
-          GITHUB_PASSWORD: ${{ secrets.CONFIG_GITHUB_TOKEN }}
-          DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-          CONFIG_USER: ${{ secrets.CONFIG_USER }}
-          CONFIG_PASSWORD: ${{ secrets.CONFIG_PASSWORD }}
-          ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
+          ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
       - name: Copy deploy files to remote host
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
@@ -55,11 +42,11 @@ jobs:
           scp safe-stop-container remote:/home/$SSH_USER
           ssh remote chmod +x safe-stop-container
           ssh remote ./safe-stop-container blopup-web-1
-          ssh remote ./safe-stop-container blopup-reverse-proxy-1
-          ssh remote ./safe-stop-container blopup-socket-proxy-1
-          ssh remote ./safe-stop-container blopup-config-1
           ssh remote rm safe-stop-container
           ssh remote docker system prune -af --volumes
       - name: Deploy
         run: |
           ssh remote docker compose -f docker-compose.yml -f docker-compose-prod.yml -p blopup up -d --build
+      - name: Remove sensitive files
+        run: |
+          ssh remote rm /home/$SSH_USER/.env
