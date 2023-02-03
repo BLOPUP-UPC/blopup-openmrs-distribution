@@ -33,13 +33,13 @@ services:
       - reverse-proxy-data:/acme
 
   web:
-    image: blopup/openmrs-referenceapplication:1.1.0
+    image: blopup/openmrs-referenceapplication:1.2.0
     environment:
-      DB_DATABASE: openmrs
+      DB_DATABASE: ${DATABASE_NAME}
       MODULE_WEB_ADMIN: 'true'   # allow web admin on OpenMRS
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=Host(`${DOMAIN:-localhost}`)
+      - traefik.http.routers.web.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.web.tls=true
       - traefik.http.routers.web.tls.certresolver=blopupresolver
     volumes:

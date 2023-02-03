@@ -1,108 +1,96 @@
-[![OpenMRS Pipeline](https://github.com/OpenMRSTest/ReferenceApplication/actions/workflows/main.yml/badge.svg)](https://github.com/OpenMRSTest/ReferenceApplication/actions/workflows/main.yml)
+[![prod](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/actions/workflows/deploy-to-prod.yml/badge.svg)](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/actions/workflows/deploy-to-prod.yml)
+[![non-prod](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/actions/workflows/deploy-to-non-prod.yml/badge.svg)](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/actions/workflows/deploy-to-non-prod.yml)
 
 # OpenMRS project distribution
+
 This repository aims to create an OpenMRS distribution that suits the needs of the project requirements.
 That is an OpenMRS client server distribution with the required modules and an SQL database.
-This repo will deploy the OpenMRS application in a remote host via ssh using Github Action and docker compose.
+This repo will deploy the OpenMRS application in a remote host via ssh using Github Actions and docker compose.
 
 # Table of Contents
 * [Development Pre Requisites](#development-pre-requisites) 
-  * [Pre-commit](#pre-commit)
   * [Colima (only for mac)](#colima-only-for-mac)
   * [Buildx](#buildx)
-* [Build own images](#build-own-images)
+* [Build our own images](#build-our-own-images)
+  * [Updating the modules](#updating-the-modules)
   * [Docker repository](#docker-repository)
   * [Multi-architecture image push](#multi-architecture-image-push)
 * [Database backup](#database-backup)
 * [Deployment](#deployment)
-  * [Environments to deploy](#environments-to-deploy)
   * [SSH](#ssh)
   * [Deployment user](#deployment-user)
+* [Deploy to localhost](#deploy-to-localhost)
 * [Traefik](#traefik)
   * [Routing](#routing)
   * [Docker socket](#docker-socket)
     * [Symlink the default docker socket to the colima socket](#symlink-the-default-docker-socket-to-the-colima-socket)
+* [Troubleshooting](#troubleshooting)
 
 # Development Pre Requisites
-## Pre-commit
-This project works with [pre-commit](https://pre-commit.com) in order to
-guarantee certain minimum requirements.
-
-To install:
-`brew install pre-commit`
-
-To prepare the hooks:
-```
-pre-commit install
-pre-commit install --hook-type commit-msg
-```
-
-For further information, see [CONTRIBUTING.md](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/blob/master/CONTRIBUTING.md)
 
 ## Colima (only for mac)
-The docker runtime is no longer free of charge, so it's needed a docker runtime to be used in development. [Colima](https://github.com/abiosoft/colima) is our friend.
+The docker runtime is no longer free of charge, so a docker runtime is needed to be used in development. [Colima](https://github.com/abiosoft/colima) is our friend.
 
 To have the docker running in local machine, follow the next steps: 
-```
-bash
-$> brew install colima
-$> brew install docker
-$> brew install docker-compose
-$> brew install docker-credential-helper
-$> colima start
+```bash
+brew install colima
+brew install docker
+brew install docker-compose
+brew install docker-credential-helper
+colima start
 ```
 
 Assumptions:
-* It's using Mac computer (iOs system)
-* Hombrew is installed
+* You are using a Mac computer.
+* [Homebrew](https://brew.sh/) is installed.
 
-To run openMRS images it's required more memory and CPU than the default. To extend this use the following comand:
-```
-bash
-$> colima start --memory 8 --cpu 4
+To run openMRS images, more memory and CPU than the default are required. To extend this, use the following command:
+```bash
+colima start --memory 8 --cpu 4
 ```
 
 For further information about how to install colima, read [this](https://smallsharpsoftwaretools.com/tutorials/use-colima-to-run-docker-containers-on-macos/)
 
 ## Buildx
-Buildx is an expanded docker images builder, that allows to build multi-architecture images.
+Buildx is an expanded docker image builder that allows to build multi-architecture images.
 
 To be able to use `buildx` syntax do the following steps below:
-```
-$ curl -LO https://github.com/docker/buildx/releases/download/${VERSION}/buildx-${VERSION}.darwin-${ARCH}
-$ mkdir -p ~/.docker/cli-plugins
-$ mv buildx-${VERSION}.darwin-${ARCH} ~/.docker/cli-plugins/docker-buildx
-$ chmod +x ~/.docker/cli-plugins/docker-buildx
-$ docker buildx version
+```bash
+curl -LO https://github.com/docker/buildx/releases/download/${VERSION}/buildx-${VERSION}.darwin-${ARCH}
+mkdir -p ~/.docker/cli-plugins
+mv buildx-${VERSION}.darwin-${ARCH} ~/.docker/cli-plugins/docker-buildx
+chmod +x ~/.docker/cli-plugins/docker-buildx
+docker buildx version
 ```
 
-Versions: https://github.com/docker/buildx/releases
+To see the latest version of `buildx` you can check it [here](https://github.com/docker/buildx/releases)
 
 Architectures:
 * For M1 chip: `arm64`
 * For intel chip: `amd64`
 
-If it doesn't work go to official page: https://docs.docker.com/build/buildx/install/ or go to the versions link and download manually the version needed.
+If it does not work, visit the [official page](https://docs.docker.com/build/buildx/install/) or go to the versions link and manually download the needed version.
 
-And done!
+# Build our own images
 
-# Build own images
-To use our own modules or different version of OpenMRS modules, we should create a new image to control it.
-OpenMRs provides an SDK to do this based on an `openmrs-distro.properties`. To install said SDK follow [this steps](https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Installation).
+## Updating the modules
 
-To create the image use the following statement:
-```
-$ mvn openmrs-sdk:build-distro -e -Ddistro=src/main/resources/{DISTRO_NAME}.properties -Ddir=docker
-```
-Real example: 
-```
-$ mvn openmrs-sdk:build-distro -e -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=docker
+To use our own modules or different version of OpenMRS modules, we should create a new image to control it. OpenMRs provides an SDK to help with this, based on an [openmrs-distro.properties](src/main/resources/openmrs-distro.properties) file. To install said SDK and generate the necessary files for the image, follow this steps (more information [here](https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Installation)):
+
+```bash
+mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
 ```
 
-The previous statement generates all the necessary files to create the docker image in the `-Ddir` folder.
+Then, from the root of the repository, you have to execute this command:
+
+```bash
+mvn openmrs-sdk:build-distro -e -Ddistro=src/main/resources/openmrs-distro.properties -Ddir=update
+```
+
+This will create an `update` folder with some files in it. Then you have to copy the `openmrs.war` file, and the `modules` and `owa` folders to the `docker/web` folder, and replace them. You can then remove the `update` folder (please, do not commit it).
 
 > **Warning**
-> All files on the -Ddir folder will be **REMOVED** and recreated.
+> All files on the -Ddir folder will be **REMOVED** and recreated. Please don't use the docker folder as a value for the -Ddir parameter.
 
 ## Docker repository
 We have a free [docker hub account](https://hub.docker.com/repository/docker/blopup/openmrs-referenceapplication) to host all docker images.
@@ -110,84 +98,86 @@ We have a free [docker hub account](https://hub.docker.com/repository/docker/blo
 If needed, ask any of the team members for the user and password.
 
 ## Multi-architecture image push
-By default, all images are generated with the local machine architecture. To do the image compatible with different architectures it's required to execute this command in the `-Ddir` folder.
+By default, all images are generated with the local machine architecture. To build compatible images with different architectures, you have to execute this command in the `docker/web` folder.
 
 To push an image compatible with linux/amd64 and linux/arm64 architecture:
-```
-$ docker buildx build --push --platform linux/amd64,linux/arm64 --tag blopup/openmrs-referenceapplication:tag .
+```bash
+docker buildx build --push --platform linux/amd64,linux/arm64 --tag blopup/openmrs-referenceapplication:latest .
 ```
 
 The general syntax:
+```bash
+docker buildx build --push --platform=[architectures name]--tag [dockerhub-user]/[image name]:[version] .
 ```
-$ docker buildx build --push --platform=[architectures name]--tag [image name]:[version] .
-```
+
+Whenever we have to publish a new image, it is convention to push both the image with the version for the tag and also another one with the `latest` tag. The version of the image is defined in the [pom](pom.xml) file and you have to manually modify it accordingly every time you want to build a new image, following the [semantic versioning](https://semver.org/) principles.
 
 # Database backup
-To create the database dump use the below command (it's need to change the database name):
+
+To create a database dump, use the below command:
+```bash
+mysqldump -u root -p [database_name] > [database_name].sql --result-file="${FILENAME_LOCATION}/dump.sql" --skip-lock-tables --skip-add-locks --skip-disable-keys --skip-add-drop-table --column-statistics=0 --skip-create-options --extended-insert --all-databases
 ```
-$ mysqldump -u root -p database_name > database_name.sql --result-file="${FILENAME_LOCATION}/dump.sql" --skip-lock-tables --skip-add-locks --skip-disable-keys --skip-add-drop-table --column-statistics=0 --skip-create-options --extended-insert --all-databases
-```
-After generating the dump, you can execute the sql commands in the new database.
+After generating the dump, you can execute the sql commands inside it in the new database.
 
 # Deployment
-This application consist of 3 docker images:
-* Traefik as a reverse-proxy
-* OpenMRS client-server distribution
-* Relational database. MariaDB(10.10.2 at the time of writing)
 
-## Environments to deploy
-To use the same pipeline for different environments add ```input``` attribute in your pipeline. This attribute must be choice type. Moreover, in options parameter it's needed to add the different environments.
-```
-on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        type: choice
-        description: Select environment
-        options:
-          - blopup-dev.upc.edu     #environment1
-          - blopup-staging.upc.edu #environment2
-```
+Our system contains four docker images:
+
+* Docker socket proxy for security
+* Traefik as a reverse-proxy and SSL certificate provider
+* OpenMRS client-server distribution
+* Relational database (only for non-prod environments). MariaDB(10.10.2 at the time of writing)
+
+The deployment is done via github actions in the github repository. There is a pipeline for non-prod environments and another one for production.
 
 ## SSH
-Deployment to the remote host from [this Github Actions pipeline](https://github.com/BLOPUP-UPC/blopup-openmrs-distribution/blob/master/.github/workflows/main.yml) will be done securily over SSL using ssh keys. We have created a deployment user in the remote host and added an SSH key. The private key content must be stored in the GitHub Secrets like this:
-* DOCKER_SSH_PRIVATE_KEY: the private key in pem format
 
+Deployment to the remote host from [this Github Actions pipeline](.github/workflows) will be done securely over SSH using ssh keys. We have created a deployment user in the remote hosts and added an SSH key. The private key content must be stored in a GitHub Secret.
 
 ## Deployment user
+
 To create a new user follow the next steps in this section, inside the remote host.
-```
-$ useradd deployment 
-$ mkdir -p /home/deployment/.ssh
-$ chown -R deployment /home/deployment # To add permissions
+```bash
+useradd deployment
+mkdir -p /home/deployment/.ssh
+chown -R deployment /home/deployment
 ```
 
 After that, add the user to the corresponding group.
-```
-$ sudo usermod -aG docker deployment
-$ newgrp docker #apply new changes
+```bash
+sudo usermod -aG docker deployment
+newgrp docker #apply new changes
 ```
 
 > **Note**
-> Use `groups` to see if group it was created.
-> For more information about groups, click [here](https://phoenixnap.com/kb/docker-permission-denied)
+> Use `groups` to see if the group was created.
+> For more information about groups, see [here](https://phoenixnap.com/kb/docker-permission-denied)
 
 Now, we have to create an SSH key for the deployment user. 
+```bash
+cd /home/deployment/.ssh
+ssh-keygen -C "$(whoami)@blopup.upc.edu"
 ```
-$ ssh-keygen -C "$(whoami)@blopup.upc.edu"
-```
-This will prompt you for the key name and the passphrase. 
+This will prompt you for the key name and the passphrase. Leave the passphrase empty since this ssh keypair is intended to be used in a non-interactive shell (i.e. the pipeline).
 
-> **Note**
-> In non-prod environment we left the passphrase empty
+Now you have to create an `authorized-keys` file and copy the content of the public key inside. 
 
-We have to create an `authorized-keys` file and copy the public key inside. 
-
-```
-$ cat <key_name>.pub > authorized-keys 
+```bash
+cat <key_name>.pub > authorized-keys
 ```
 
-The content of the private key must be stored in a GitHub secret named `DOCKER_SSH_PRIVATE_KEY`.
+The content of the private key must be stored in a GitHub secret.
+
+# Deploy to localhost
+
+You just have to run the following command from the root of the repository:
+
+```bash
+docker compose -f docker-compose-local.yml up -d --build
+```
+
+The [.env](.env) file contains the environment variables used to deploy the app and the database in your local machine.
 
 # Traefik
 
@@ -195,9 +185,9 @@ Traefik is used as a reverse proxy and for SSL with Let's encrypt. The reverse p
 
 ## Routing
 
-We are currently routing two different backend applications. Openmrs itself and the [blopup config server](https://github.com/BLOPUP-UPC/blopup-config-server). Internally, openmrs runs in port 8080 and the config server runs in port 8081. Traefik is redirecting all calls to the root path to the openmrs tomcat and all calls to the `/config` path to the config server.
+We are currently routing only one backend application, the OpenMRS distribution that we generate in this repository. Internally, openmrs runs in port 8080 and Traefik is redirecting all calls to the root path to said port.
 
-To configure routing to new apps, you just need to add some labels to the service in the `docker-compose.yml` file.
+To configure routing to new apps, you just need to add some labels to the service you want to redirect in the `docker-compose.yml` file.
 
 ```yaml
 - traefik.enable=true 
@@ -217,18 +207,72 @@ The docker socket proxy uses the host docker socket and exposes it with some con
 
 ### Symlink the default docker socket to the colima socket
 
-```shell
-> cd /var/run
-> sudo ln -s ~/.colima/docker.sock docker.sock
+```bash
+cd /var/run
+sudo ln -s ~/.colima/docker.sock docker.sock
 ```
 
 The colima socket is usually under the `~/.colima/docker.sock` path, but you can run a `colima status` to check if it is there.
 
-```shell
-> colima status
-INFO[0000] colima is running
-INFO[0000] arch: x86_64
-INFO[0000] runtime: docker
-INFO[0000] mountType: sshfs
-INFO[0000] socket: unix:///Users/your_user_name/.colima/default/docker.sock
+```bash
+colima status
+> INFO[0000] colima is running
+> INFO[0000] arch: x86_64
+> INFO[0000] runtime: docker
+> INFO[0000] mountType: sshfs
+> INFO[0000] socket: unix:///Users/your_user_name/.colima/default/docker.sock
 ```
+
+# Troubleshooting
+
+**Problem**
+
+OpenMRS does not start and in the logs you can see something like
+
+```
+App 'referenceapplication.registrationapp.registerPatient' says its an instanceOf 'registrationapp.registerPatient' but there is no AppTemplate with that id
+```
+
+**Cause**
+
+This error means that the character set and collation of the database is not set correctly. Openmrs expects a value of utf8 for character and utf8_general_ci for collation.
+
+**Solution**
+
+If you are using a dockerised database, make sure to include this in the `command` section of the image:
+
+```yaml
+command: "mysqld --character-set-server=utf8 --collation-server=utf8_general_ci"
+```
+
+If you are using a database in another host or in your local machine, execute this SQL commands in the database directly:
+
+```mysql
+SET character_set_server = 'utf-8';
+SET collation_server = 'utf8_general_ci';
+```
+
+**Problem**
+OpenMRS does not start and in the logs you can see something like
+
+```
+1 change sets check sum
+          liquibase.xml::daa579e7-b8de-4858-bfe5-c9ef2606db5e::Samuel Male was: 8:8c0e70ceade1a06bd939857cc4d82841 but is now: 8:fa0293619384334f16e246e0aab32df7
+```
+
+**Cause**
+
+The md5sum of liquibase in your database is different from the one in the repository changeset.
+
+This usually happens when you load a database dump from and old version of openmrs to a newer version.
+
+**Solution**
+
+You can try updating the relevant module or service version or you can just change the md5sum in your database for the correct one. In the case of the example above, you should need to run this SQL command
+
+```mysql
+UPDATE openmrs.liquibasechangelog SET MD5SUM = '8:fa0293619384334f16e246e0aab32df7' WHERE MD5SUM = '8:8c0e70ceade1a06bd939857cc4d82841';
+```
+
+> **Warning**
+> Be very careful when updating a database manually. Never autocommit and make sure that only one row is affected before committing the database transaction.
