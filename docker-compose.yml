@@ -29,6 +29,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "465:465"
     volumes:
       - reverse-proxy-data:/acme
 
