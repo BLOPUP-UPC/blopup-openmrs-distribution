@@ -27,6 +27,9 @@ services:
       - --entrypoints.websecure.http.tls
       - --certificatesresolvers.blopupresolver.acme.storage=/acme/acme.json
       - --certificatesresolvers.blopupresolver.acme.httpchallenge.entrypoint=web
+      - --entrypoints.smtp-ssl.address=:465
+
+
     ports:
       - "80:80"
       - "443:443"
@@ -44,6 +47,11 @@ services:
       - traefik.http.routers.web.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.web.tls=true
       - traefik.http.routers.web.tls.certresolver=blopupresolver
+      - traefik.tcp.routers.blopup_smtp_ssl.rule=HostSNI(\`*\`)
+      - traefik.tcp.routers.blopup_smtp_ssl.entrypoints=smtp-ssl
+      - traefik.tcp.routers.blopup_smtp_ssl.tls.passthrough=true
+      - traefik.tcp.routers.blopup_smtp_ssl.service=blopup_smtp_ssl
+      - traefik.tcp.services.blopup_smtp_ssl.loadbalancer.server.port=465
     volumes:
       - web-data:/usr/local/tomcat/.OpenMRS
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
