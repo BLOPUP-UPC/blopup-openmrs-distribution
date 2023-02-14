@@ -15,7 +15,6 @@ services:
       # Docker config
       - --providers.docker
       - --providers.docker.endpoint=tcp://socket-proxy:2375
-      - --providers.docker.endpoint=tcp://socket-proxy:465
       - --providers.docker.watch=true
       - --providers.docker.exposedbydefault=false
       # Entrypoints
