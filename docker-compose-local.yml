@@ -51,6 +51,9 @@ services:
       - traefik.enable=true
       - traefik.http.routers.web.rule=Host(`${DOMAIN}`)
     volumes:
+      - type: bind
+        source: ./legalConsentStore
+        target: /opt/app/legalConsentStore
       - web-data:/usr/local/tomcat/.OpenMRS
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
       - /usr/local/tomcat/.OpenMRS/owa/ # used to mount persistent docker volume for owa
