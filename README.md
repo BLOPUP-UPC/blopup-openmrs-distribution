@@ -100,7 +100,17 @@ If needed, ask any of the team members for the user and password.
 ## Multi-architecture image push
 By default, all images are generated with the local machine architecture. To build compatible images with different architectures, you have to execute this command in the `docker/web` folder.
 
+```bash
+cd docker/web
+```
+
+Do a docker login. Credentials are in Bitwarden.
+```bash
+docker login
+```
+
 To push an image compatible with linux/amd64 and linux/arm64 architecture:
+
 ```bash
 docker buildx build --push --platform linux/amd64,linux/arm64 --tag blopup/openmrs-referenceapplication:latest .
 ```
