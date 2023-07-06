@@ -52,6 +52,9 @@ services:
       - traefik.tcp.routers.blopup_smtp_ssl.service=blopup_smtp_ssl
       - traefik.tcp.services.blopup_smtp_ssl.loadbalancer.server.port=465
     volumes:
+      - type: bind
+        source: ./legalConsentStore
+        target: /opt/app/legalConsentStore
       - web-data:/usr/local/tomcat/.OpenMRS
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
       - /usr/local/tomcat/.OpenMRS/owa/     # used to mount persistent docker volume for owa
