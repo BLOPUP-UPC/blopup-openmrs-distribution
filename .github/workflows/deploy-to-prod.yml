@@ -27,6 +27,9 @@ jobs:
           END
         env:
           SSH_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+      - name: Create legalConsentStore folder
+        run: |
+          ssh remote mkdir -p legalConsentStore
       - name: Create docker .env file
         run: |
           echo "$ENV_FILE" > .env
