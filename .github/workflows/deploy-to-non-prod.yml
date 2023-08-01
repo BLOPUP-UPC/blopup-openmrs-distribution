@@ -14,12 +14,18 @@ env:
   SSH_USER: ${{ secrets.SSH_USER }}
   ENV: ${{ github.event.inputs.environment }}
 
+permissions: write-all
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.4.2
+        uses: actions/checkout@v3
+      - name: Download file-upload module OMOD file
+        run: |
+          chmod +x scripts/download-file-upload-module.sh 
+          scripts/download-file-upload-module.sh ${{ secrets.BLOPUP_TOKEN }}
       - name: install buildx
         id: buildx
         uses: crazy-max/ghaction-docker-buildx@v1
