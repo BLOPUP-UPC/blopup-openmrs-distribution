@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 TOKEN=$1
-REPOSITORY=$2
 
 # find and delete files in docker/web/modules starting with blopup.fileupload.module-*
 find docker/web/modules -name 'blopup.fileupload.module-*' -delete
@@ -21,19 +20,21 @@ curl -sL \
   -H "Accept: application/octet-stream" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/BLOPUP-UPC/blopup-file-upload-module/releases/assets/$ASSET_ID \
-  > "$ASSET_NAME"
+  https://api.github.com/repos/BLOPUP-UPC/blopup-file-upload-module/releases/assets/"$ASSET_ID" \
+  > docker/web/modules/"$ASSET_NAME"
 
-#commit and push the new module to the repository
-FILE=$(base64 -i "$ASSET_NAME")
+#encode the asset content in base64 and save to file
+ENCODED_CONTENT=$(base64 -i docker/web/modules/"$ASSET_NAME")
+echo '{"message": "updating modules - '"$ASSET_NAME"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
 
+#push the new module to the repository
 curl -sL \
- -X PUT \
+  -X PUT \
  -H "Accept: application/vnd.github+json" \
  -H "Authorization: Bearer $TOKEN" \
  -H "X-GitHub-Api-Version: 2022-11-28" \
- https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$ASSET_NAME" \
- -d "{'message':'updating modules: $ASSET_NAME','committer':{'name':'Github Actions','email':''},'content':'$FILE'}"
+ -d @data.json \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$ASSET_NAME" \
 
 #next steps:
 # - do the same for the notification module
