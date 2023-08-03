@@ -22,11 +22,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Download file-upload module OMOD file
+      - name: Update custom modules
         run: |
           chmod +x scripts/*.sh
           scripts/update-file-upload-module.sh ${{ secrets.BLOPUP_TOKEN }}
           scripts/update-notification-module.sh ${{ secrets.BLOPUP_TOKEN }}
+# add step to update pom.xml with project and module versions
+# (tag commit with project version and add module versions to commit message - add commit message as tag message)
       - name: install buildx
         id: buildx
         uses: crazy-max/ghaction-docker-buildx@v1
@@ -35,7 +37,9 @@ jobs:
       - name: login to docker hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: build the image
+# tag image with project version from pom.xml rather than latest
         run: |
+            
             docker buildx build --push \
               --tag blopup/openmrs-referenceapplication:latest \
               --platform linux/amd64,linux/arm64 docker/web
