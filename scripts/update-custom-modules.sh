@@ -4,22 +4,23 @@ TOKEN=$1
 touch result.txt
 touch commit-message.txt
 
-for module_repo_and_name in \
+for module in \
 "notification blopup.notification" \
 "file-upload blopup.fileupload.module" \
 
 do
-    set -- $module_repo_and_name # split the string into positional parameters
+    set -- $module # split the string into positional parameters
 
 # find and delete files in docker/web/modules starting with the module name
 find docker/web/modules -name "$2-*" -delete
+
 
 # download the module's latest release asset ID and name from github api
 RELEASE=$(curl -sL \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/BLOPUP-UPC/"$1"/releases/latest)
+  https://api.github.com/repos/BLOPUP-UPC/blopup-"$1"-module/releases/latest)
 
 ASSET_ID=$(echo "$RELEASE" | jq -r '.assets[0].id')
 ASSET_NAME=$(echo "$RELEASE" | jq -r '.assets[0].name')
@@ -29,7 +30,7 @@ curl -sL \
   -H "Accept: application/octet-stream" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/BLOPUP-UPC/"blopup-$1-module"/releases/assets/"$ASSET_ID" \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-"$1"-module/releases/assets/"$ASSET_ID" \
   > docker/web/modules/"$ASSET_NAME"
 
 #encode the asset content in base64 and save to file
@@ -46,21 +47,24 @@ curl -sL \
   https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$ASSET_NAME" \
   > response.json
 
+echo "$ASSET_NAME" > response.json
+
 #check if response.json contains string Invalid request
 if grep -q 'Invalid request' response.json; then
   echo "Already using latest module version - $ASSET_NAME"
 fi
 
-#check if response.json contains asset name string
+#check if response.json contains asset name string and update version number in pom.xml
 if grep -q "$ASSET_NAME" response.json; then
   echo "Module updated - $ASSET_NAME"
   echo "Module updated - $ASSET_NAME" >> result.txt
 
-  CURRENT_VERSION=$(yq ".project.properties.$2Version" pom.xml)
-  NEW_VERSION=$(echo "$ASSET_NAME" | (IFS="-.$IFS" ; read module_name version && echo "$version"))
-  echo "Updating $2 module version from $CURRENT_VERSION to $NEW_VERSION"
-  echo "Updating $2 module version from $CURRENT_VERSION to $NEW_VERSION \n" >> commit-message.txt
-  yq -i ".project.properties.$2Version = $NEW_VERSION" pom.xml
+CURRENT_VERSION=$(yq ".project.properties.$1Version" pom.xml)
+NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
+NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
+echo "Updating $1 module version from $CURRENT_VERSION to $NEW_VERSION"
+echo "Updating $1 module version from $CURRENT_VERSION to $NEW_VERSION" >> commit-message.txt
+yq -i '.project.properties.'"$2"'Version = "'"$NEW_VERSION"'"' pom.xml
 fi
 
 done
