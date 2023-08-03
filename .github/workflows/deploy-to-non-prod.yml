@@ -25,8 +25,7 @@ jobs:
       - name: Update custom modules
         run: |
           chmod +x scripts/*.sh
-          scripts/update-file-upload-module.sh ${{ secrets.BLOPUP_TOKEN }}
-          scripts/update-notification-module.sh ${{ secrets.BLOPUP_TOKEN }}
+          scripts/update-custom-modules.sh ${{ secrets.BLOPUP_TOKEN }}
 # add step to update pom.xml with project and module versions
 # (tag commit with project version and add module versions to commit message - add commit message as tag message)
       - name: install buildx

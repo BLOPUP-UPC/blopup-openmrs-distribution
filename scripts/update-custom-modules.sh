@@ -2,15 +2,22 @@
 
 TOKEN=$1
 
-# find and delete files in docker/web/modules starting with blopup.fileupload.module-*
-find docker/web/modules -name 'blopup.fileupload.module-*' -delete
+for module_repo_and_name in \
+"blopup-notification-module blopup.notification" \
+"blopup-file-upload-module blopup.fileupload.module"
 
-# download blopup-file-upload-module latest release asset ID and name from github api
+do
+    set -- "module_repo_and_name" # split the string into positional parameters
+
+# find and delete files in docker/web/modules starting with the module name
+find docker/web/modules -name "$2-*" -delete
+
+# download the module's latest release asset ID and name from github api
 RELEASE=$(curl -sL \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/BLOPUP-UPC/blopup-file-upload-module/releases/latest)
+  https://api.github.com/repos/BLOPUP-UPC/"$1"/releases/latest)
 
 ASSET_ID=$(echo "$RELEASE" | jq -r '.assets[0].id')
 ASSET_NAME=$(echo "$RELEASE" | jq -r '.assets[0].name')
@@ -20,7 +27,7 @@ curl -sL \
   -H "Accept: application/octet-stream" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/BLOPUP-UPC/blopup-file-upload-module/releases/assets/"$ASSET_ID" \
+  https://api.github.com/repos/BLOPUP-UPC/"$1"/releases/assets/"$ASSET_ID" \
   > docker/web/modules/"$ASSET_NAME"
 
 #encode the asset content in base64 and save to file
@@ -46,6 +53,7 @@ fi
 if grep -q "$ASSET_NAME" response.json; then
   echo "Module updated - $ASSET_NAME"
 fi
+done
 
 #delete response.json and data.json
 rm response.json  data.json
