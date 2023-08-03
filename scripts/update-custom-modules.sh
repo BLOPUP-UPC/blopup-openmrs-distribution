@@ -45,14 +45,12 @@ curl -sL \
   https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$ASSET_NAME" \
   > response.json
 
-echo "$ASSET_NAME" > response.json
-
 #check if response.json contains string Invalid request
 if grep -q 'Invalid request' response.json; then
   echo "Already using latest module version - $ASSET_NAME"
 fi
 
-#check if response.json contains asset name string and update version number in pom.xml
+#check if response.json contains asset name string and update module version number in pom.xml
 if grep -q "$ASSET_NAME" response.json; then
   echo "Module updated - $ASSET_NAME"
 
@@ -60,7 +58,7 @@ CURRENT_VERSION=$(yq ".project.properties.$1Version" pom.xml)
 NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
 NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
 echo "Updating $1 module version from $CURRENT_VERSION to $NEW_VERSION"
-printf "Updating %s module version from %s to %s" "$1" "$CURRENT_VERSION" "$NEW_VERSION" >> commit-message.txt
+printf "Updating %s module version from %s to %s. " "$1" "$CURRENT_VERSION" "$NEW_VERSION" >> commit-message.txt
 yq -i '.project.properties.'"$2"'Version = "'"$NEW_VERSION"'"' pom.xml
 fi
 done
