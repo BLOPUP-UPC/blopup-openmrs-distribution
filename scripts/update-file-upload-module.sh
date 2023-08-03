@@ -35,4 +35,17 @@ curl -sL \
  -H "X-GitHub-Api-Version: 2022-11-28" \
  -d @data.json \
   https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$ASSET_NAME" \
+  > response.json
 
+#check if response.json contains string Invalid request
+if grep -q 'Invalid request' response.json; then
+  echo "Already using latest module version - $ASSET_NAME"
+fi
+
+#check if response.json contains asset name string
+if grep -q "$ASSET_NAME" response.json; then
+  echo "Module updated - $ASSET_NAME"
+fi
+
+#delete response.json and data.json
+rm response.json  data.json
