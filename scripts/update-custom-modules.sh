@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
 TOKEN=$1
-touch result.txt
 touch commit-message.txt
 
 for module in \
 "notification blopup.notification" \
-"file-upload blopup.fileupload.module" \
-
+"file-upload blopup.fileupload.module"
 do
     set -- $module # split the string into positional parameters
 
@@ -57,14 +55,14 @@ fi
 #check if response.json contains asset name string and update version number in pom.xml
 if grep -q "$ASSET_NAME" response.json; then
   echo "Module updated - $ASSET_NAME"
-  echo "Module updated - $ASSET_NAME" >> result.txt
 
 CURRENT_VERSION=$(yq ".project.properties.$1Version" pom.xml)
 NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
 NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
 echo "Updating $1 module version from $CURRENT_VERSION to $NEW_VERSION"
-echo "Updating $1 module version from $CURRENT_VERSION to $NEW_VERSION" >> commit-message.txt
+printf "Updating %s module version from %s to %s" "$1" "$CURRENT_VERSION" "$NEW_VERSION" >> commit-message.txt
 yq -i '.project.properties.'"$2"'Version = "'"$NEW_VERSION"'"' pom.xml
 fi
-
 done
+
+sh scripts/update-version-numbers.sh "$TOKEN"
