@@ -7,10 +7,12 @@ for module_repo_and_name in \
 "blopup-file-upload-module blopup.fileupload.module"
 
 do
-    set -- "module_repo_and_name" # split the string into positional parameters
+    set -- $module_repo_and_name # split the string into positional parameters
 
 # find and delete files in docker/web/modules starting with the module name
 find docker/web/modules -name "$2-*" -delete
+
+echo $2
 
 # download the module's latest release asset ID and name from github api
 RELEASE=$(curl -sL \
@@ -18,6 +20,8 @@ RELEASE=$(curl -sL \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/BLOPUP-UPC/"$1"/releases/latest)
+
+echo   https://api.github.com/repos/BLOPUP-UPC/"$1"/releases/latest
 
 ASSET_ID=$(echo "$RELEASE" | jq -r '.assets[0].id')
 ASSET_NAME=$(echo "$RELEASE" | jq -r '.assets[0].name')
