@@ -4,8 +4,8 @@ TOKEN=$1
 if grep -q "module" commit-message.txt; then
 CURRENT_VERSION=$(yq '.project.version' pom.xml)
 NEW_VERSION=$(echo "$CURRENT_VERSION" | (IFS=".$IFS" ; read major minor revision && echo "$major".$((minor + 1)).0))
-echo "Updating project version from $CURRENT_VERSION to $NEW_VERSION"
-printf "Updating blopup-openmrs-distribution project version from %s to %s" "$CURRENT_VERSION" "$NEW_VERSION" >> commit-message.txt
+echo "Updating project version to $NEW_VERSION"
+printf "Blopup-openmrs-distribution project version to %s" "$NEW_VERSION" >> commit-message.txt
 yq -i '.project.version = "'"$NEW_VERSION"'"' pom.xml
 
 #get pom.xml sha
