@@ -50,6 +50,3 @@ fi
 
 #delete all temp files created for this operation
 rm data.json commit-message.txt response.json
-
-#TODO
-#change file upload asset name and remove variable from the script

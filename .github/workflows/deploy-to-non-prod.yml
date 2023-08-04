@@ -34,11 +34,9 @@ jobs:
       - name: login to docker hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: build the image
-# tag image with project version from pom.xml rather than latest
         run: |
-            
             docker buildx build --push \
-              --tag blopup/openmrs-referenceapplication:latest \
+              --tag blopup/openmrs-referenceapplication:$(yq '.project.version' pom.xml) \
               --platform linux/amd64,linux/arm64 docker/web
       - name: Configure SSH
         run: |
