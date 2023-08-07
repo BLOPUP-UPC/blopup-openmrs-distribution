@@ -29,7 +29,7 @@ curl -sL \
   -H "Accept: application/octet-stream" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/BLOPUP-UPC/blopup-"$1"-module/releases/assets/"$ASSET_ID" \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-"$name"-module/releases/assets/"$ASSET_ID" \
   > docker/web/modules/"$ASSET_NAME"
 
 #encode the asset content in base64, create request data and save to file
