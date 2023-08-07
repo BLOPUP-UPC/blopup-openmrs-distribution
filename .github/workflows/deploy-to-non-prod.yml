@@ -37,6 +37,7 @@ jobs:
         run: |
             docker buildx build --push \
               --tag blopup/openmrs-referenceapplication:$(yq '.project.version' pom.xml) \
+              --tag blopup/openmrs-referenceapplication:latest \
               --platform linux/amd64,linux/arm64 docker/web
       - name: Configure SSH
         run: |
