@@ -3,24 +3,26 @@
 TOKEN=$1
 echo "Updating versions: " > commit-message.txt
 
-for module in \
-"notification notification" \
-"file-upload fileupload.module"
+#the name of the repo with the format `blopup-<name>-module`
+for name in \
+"notification" \
+"file-upload"
 do
-    set -- $module # split the string into positional parameters
-
-# find and delete files in docker/web/modules starting with the module name
-find docker/web/modules -name "blopup.$2-*" -delete
 
 # download the module's latest release asset ID and name from github api
 RELEASE=$(curl -sL \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/BLOPUP-UPC/blopup-"$1"-module/releases/latest)
+  https://api.github.com/repos/BLOPUP-UPC/blopup-"$name"-module/releases/latest)
 
 ASSET_ID=$(echo "$RELEASE" | jq -r '.assets[0].id')
 ASSET_NAME=$(echo "$RELEASE" | jq -r '.assets[0].name')
+MODULE_NAME=$(echo "$ASSET_NAME" | cut -d '-' -f 1)
+MODULE_NAME=$(echo "$MODULE_NAME" | cut -d '.' -f 2)
+
+# find and delete files in docker/web/modules starting with the module name
+find docker/web/modules -name "blopup.$MODULE_NAME-*" -delete
 
 #get the asset from github api passing the asset ID and save it in the modules folder
 curl -sL \
@@ -55,9 +57,10 @@ if grep -q "$ASSET_NAME" response.json; then
 
 NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
 NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
-echo "Updating $1 module version to $NEW_VERSION"
-printf "%s module to version %s. " "$1" "$NEW_VERSION" >> commit-message.txt
-yq -i '.project.properties.'"$1"'Version = "'"$NEW_VERSION"'"' pom.xml
+
+echo "Updating $MODULE_NAME module version to $NEW_VERSION"
+printf "%s module to version %s." "$MODULE_NAME" "$NEW_VERSION" >> commit-message.txt
+yq -i '.project.properties.'"$MODULE_NAME"'Version = "'"$NEW_VERSION"'"' pom.xml
 fi
 done
 
