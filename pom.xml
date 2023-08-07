@@ -18,7 +18,7 @@
     <appuiVersion>1.14.0</appuiVersion>
     <atlasVersion>2.2.5</atlasVersion>
     <attachmentsVersion>2.5.0</attachmentsVersion>
-    <file-uploadVersion>1.0.0</file-uploadVersion>
+    <fileuploadVersion>1.0.0</fileuploadVersion>
     <notificationVersion>1.0.0</notificationVersion>
     <calculationVersion>1.3.0</calculationVersion>
     <coreappsVersion>1.34.0</coreappsVersion>
@@ -55,6 +55,5 @@
     <uilibraryVersion>2.0.7</uilibraryVersion>
     <webservices.restVersion>2.32.0</webservices.restVersion><!-- OWAs -->
     <sysadminVersion>1.2</sysadminVersion>
-    <fileuploadVersion>1.0.0</fileuploadVersion>
   </properties>
 </project>

@@ -76,10 +76,10 @@ If it does not work, visit the [official page](https://docs.docker.com/build/bui
 ## Updating the modules
 
 As OpenMRS has a modular architecture, all changes to the backend are applied through introducing new or modifying existing modules. To add a new module or make sure an existing module is up-to-date, you have to complete the following steps:
-1. In the module repo, make sure that you have included the build-and-release-omod-file workflow (check out the blopup-notification-module repo for an example)
+1. In the module repo
+   * make sure that you have included the `build-and-release-omod-file` workflow (check out the blopup-notification-module repo for an example)
+   * the project name should follow this format: `blopup.<module-name>`. The module name can't contain special characters or dashes.
 2. In the `scripts` folder, you need to add the module name to the `update-custom-modules.sh` file
-3. In the project `pom.xml` file, you need to add the module name followed by version to the `project.properties` section. For example, <notificationVersion>1.0.0</notificationVersion> for the notification module
-
 
 To use our own modules or different version of OpenMRS modules, we should create a new image to control it. OpenMRs provides an SDK to help with this, based on an [openmrs-distro.properties](src/main/resources/openmrs-distro.properties) file. To install said SDK and generate the necessary files for the image, follow this steps (more information [here](https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Installation)):
 
