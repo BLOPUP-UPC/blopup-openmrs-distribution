@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.example</groupId>
   <artifactId>dev-openmrs-poc</artifactId>
-  <version>1.4.0</version>
+  <version>1.2.0</version>
   <properties>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
@@ -55,14 +55,5 @@
     <uilibraryVersion>2.0.7</uilibraryVersion>
     <webservices.restVersion>2.32.0</webservices.restVersion><!-- OWAs -->
     <sysadminVersion>1.2</sysadminVersion>
-    <blopup>
-      <notificationVersion>1.0.0</notificationVersion>
-      <fileupload>
-        <moduleVersion>1.0.0</moduleVersion>
-      </fileupload>
-    </blopup>
-    <fileupload>
-      <moduleVersion>1.0.0</moduleVersion>
-    </fileupload>
   </properties>
 </project>

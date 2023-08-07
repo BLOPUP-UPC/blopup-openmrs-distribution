@@ -57,7 +57,7 @@ NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
 NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
 echo "Updating $1 module version to $NEW_VERSION"
 printf "%s module to version %s. " "$1" "$NEW_VERSION" >> commit-message.txt
-yq -i '.project.properties.'"$2"'Version = "'"$NEW_VERSION"'"' pom.xml
+yq -i '.project.properties.'"$1"'Version = "'"$NEW_VERSION"'"' pom.xml
 fi
 done
 
