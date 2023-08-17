@@ -12,27 +12,35 @@ else
   echo "Updating reference application version to $LATEST_REFERENCE_APPLICATION_VERSION"
   echo "Downloading modules"
   #download and replace modules
-  wget -q https://sourceforge.net/projects/openmrs/files/releases/OpenMRS_Reference_Application_"$LATEST_REFERENCE_APPLICATION_VERSION"/referenceapplication-addons-$LATEST_REFERENCE_APPLICATION_VERSION.zip/ -O docker/file.zip
+  wget -q https://sourceforge.net/projects/openmrs/files/releases/OpenMRS_Reference_Application_"$LATEST_REFERENCE_APPLICATION_VERSION"/referenceapplication-addons-$LATEST_REFERENCE_APPLICATION_VERSION.zip/ -O file.zip
   echo "Unzipping files"
-  unzip -q docker/file
-  rsync -a referenceapplication*/modules docker/web
-  rm docker/web/owa
-  mv referenceapplication*/owa docker/web/owa
+  unzip -q file
 
+  #updating owa file
+  echo "Updating owa file"
+  rm -r docker/web/owa
+  mv referenceapplication*/owa docker/web/
+
+#removing modules with newer version available
+ls referenceapplication*/modules > referenceapplication_modules.txt
+echo "Replacing modules with newer version available"
 while IFS=$'\n' read -r module; do
-  find . -name "docker/web/modules/$module*" -delete
-done < $(ls referenceapplication*/modules)
-  #commit the changes to the modules via github api
-  echo "Committing changes to github"
+  module_name=$(echo "$module" | cut -d '-' -f 1)
+  find docker/web/modules -name "$module_name-*" -exec rm {} \;
+  echo "Found newer version for $module_name"
+done < referenceapplication_modules.txt
+
+#syncing
+echo "Syncing modules"
+rsync -a referenceapplication*/modules/ docker/web/modules/
+
+#update referenceapplicationVersion in pom.xml
+echo "Updating reference application version to $LATEST_REFERENCE_APPLICATION_VERSION"
+yq -i '.project.properties.referenceapplicationVersion = "'"$LATEST_REFERENCE_APPLICATION_VERSION"'"' pom.xml
+
+rm file.zip
+rm -r referenceapplication*
 fi
 
-
-
-
-#encode the asset content in base64, create request data and save to file
-ENCODED_CONTENT=$(base64 -i pom.xml)
-echo '{"message": "updating reference application version to '"$LATEST_REFERENCE_APPLICATION_VERSION"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
-
-
 #clean up
-rm ref_app_versions.txt response.html file.zip -r referenceapplication*
+rm ref_app_versions.txt response.html
