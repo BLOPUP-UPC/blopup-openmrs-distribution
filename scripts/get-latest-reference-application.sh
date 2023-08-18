@@ -18,22 +18,21 @@ else
   echo "Unzipping files"
   unzip -q file
 
-  #updating owa file
+  #updating SystemAdministration owa file
   echo "Updating owa file"
-  rm -r docker/web/owa
-  mv referenceapplication*/owa docker/web/
 
   #replacing modules with newer version available
   ls referenceapplication*/modules > referenceapplication_modules.txt
   echo "Replacing modules with newer version available"
-  while IFS=$'\n' read -r module; do
-    latest_module=$(echo "$module" | cut -d '-' -f 1)
+  while IFS=$'\n' read -r latest_module; do
+    module_name=$(echo "$latest_module" | cut -d '-' -f 1)
     current_module=$(find docker/web/modules -name "$module_name-*" | cut -d '/' -f 4)
 
     if [ "$latest_module" == "$current_module" ]; then
       echo "Module $module_name is already up to date"
     else
-      echo "Committing module version - $latest_module"
+      echo "Committing module version - $latest_module "
+      echo "$latest_module, " >> commit-message.txt
       ENCODED_CONTENT=$(base64 -i referenceapplication*/modules/"$latest_module")
       echo '{"message": "updating '"$module_name"' to match reference application version '"$LATEST_REFERENCE_APPLICATION_VERSION'"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
 
@@ -45,6 +44,11 @@ else
         -d @data.json \
          https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$latest_module" \
          > response.json
+
+      #update module version in pom.xml
+      version=$(echo "$latest_module" | cut -d '-' -f 2 | cut -d '.' -f 1-3)
+      yq -i '.project.properties.'"$module_name"'Version = "'"$version"'"' pom.xml
+
 
       echo "Deleting outdated module - $current_module"
       curl -sL \
