@@ -52,7 +52,7 @@ else
       echo "Module $module_name is already up to date"
     else
       echo "Committing module version - $latest_module "
-      echo "$latest_module, " >>commit-message.txt
+      echo "module: $latest_module, " >>commit-message.txt
       ENCODED_CONTENT=$(base64 -i referenceapplication*/modules/"$latest_module")
       echo '{"message": "updating '"$module_name"' to match reference application version '"$LATEST_REFERENCE_APPLICATION_VERSION'"'", "content":"'"$ENCODED_CONTENT"'"}' >data.json
 
