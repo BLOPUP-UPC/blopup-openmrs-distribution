@@ -48,12 +48,16 @@
     <reportingVersion>1.25.0</reportingVersion>
     <reportingcompatibilityVersion>2.0.8</reportingcompatibilityVersion>
     <reportinguiVersion>1.8.0</reportinguiVersion>
-    <serialization.xstreamVersion>0.2.15</serialization.xstreamVersion>
+    <serialization>
+      <xstreamVersion>0.2.15</xstreamVersion>
+    </serialization>
     <spaVersion>1.0.8</spaVersion>
     <uicommonsVersion>2.19.0</uicommonsVersion>
     <uiframeworkVersion>3.22.0</uiframeworkVersion>
     <uilibraryVersion>2.0.7</uilibraryVersion>
-    <webservices.restVersion>2.32.0</webservices.restVersion><!-- OWAs -->
+    <webservices>
+        <restVersion>2.32.0</restVersion>
+    </webservices><!-- OWAs -->
     <sysadminVersion>1.2</sysadminVersion>
   </properties>
 </project>
