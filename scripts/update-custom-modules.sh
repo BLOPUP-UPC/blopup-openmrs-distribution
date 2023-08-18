@@ -8,6 +8,8 @@ for name in \
 "notification" \
 "file-upload"
 do
+#find current module version
+CURRENT_MODULE=$(find docker/web/modules -name "blopup.$MODULE_NAME-*")
 
 # download the module's latest release asset ID and name from github api
 RELEASE=$(curl -sL \
@@ -20,9 +22,6 @@ ASSET_ID=$(echo "$RELEASE" | jq -r '.assets[0].id')
 ASSET_NAME=$(echo "$RELEASE" | jq -r '.assets[0].name')
 MODULE_NAME=$(echo "$ASSET_NAME" | cut -d '-' -f 1)
 MODULE_NAME=$(echo "$MODULE_NAME" | cut -d '.' -f 2)
-
-# find and delete files in docker/web/modules starting with the module name
-find docker/web/modules -name "blopup.$MODULE_NAME-*" -delete
 
 #get the asset from github api passing the asset ID and save it in the modules folder
 curl -sL \
@@ -55,6 +54,24 @@ fi
 if grep -q "$ASSET_NAME" response.json; then
   echo "Module updated - $ASSET_NAME"
 
+#delete outdated module from the repository
+#get file sha
+curl -sL \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$CURRENT_MODULE" > response.json
+
+SHA=$(jq -r '.sha' response.json)
+
+curl -L \
+  -X DELETE \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$CURRENT_MODULE" \
+  -d '{"message":"removing outdated module", "sha":"'"$SHA"'"}'
+
 NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
 NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
 
@@ -64,4 +81,4 @@ yq -i '.project.properties.'"$MODULE_NAME"'Version = "'"$NEW_VERSION"'"' pom.xml
 fi
 done
 
-sh scripts/update-version-numbers.sh "$TOKEN"
+sh scripts/get-latest-reference-application.sh "$TOKEN"

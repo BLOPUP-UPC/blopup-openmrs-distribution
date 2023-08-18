@@ -1,3 +1,5 @@
+TOKEN=$1
+
 #get latest reference application
 curl -s https://sourceforge.net/projects/openmrs/files/releases/ > response.html
 grep -o "OpenMRS_Reference_Application_[0-9]*\.[0-9]*\.[0-9]*" response.html > ref_app_versions.txt
@@ -21,22 +23,59 @@ else
   rm -r docker/web/owa
   mv referenceapplication*/owa docker/web/
 
-#removing modules with newer version available
+#replacing modules with newer version available
 ls referenceapplication*/modules > referenceapplication_modules.txt
 echo "Replacing modules with newer version available"
 while IFS=$'\n' read -r module; do
   module_name=$(echo "$module" | cut -d '-' -f 1)
-  find docker/web/modules -name "$module_name-*" -exec rm {} \;
-  echo "Found newer version for $module_name"
+  module_to_update=$(find docker/web/modules -name "$module_name-*")
+if [ -z "$module_to_update" ]; then
+    echo "Latest version already installed- $module_name"
+  else
+    echo "Module update found - $module_name"
+ENCODED_CONTENT=$(base64 -i referenceapplication*/modules/"$module_name"*)
+echo '{"message": "updating '"$module_name"' to match reference application version '"$LATEST_REFERENCE_APPLICATION_VERSION'"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
+
+#get file sha
+curl -sL \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$module_to_update" > response.json
+
+SHA=$(jq -r '.sha' response.json)
+
+curl -L \
+  -X DELETE \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$module_to_update" \
+  -d '{"message":"removing outdated module '"$module_to_update"'", "sha":"'"$SHA"'"}'
+  fi
 done < referenceapplication_modules.txt
 
-#syncing
-echo "Syncing modules"
-rsync -a referenceapplication*/modules/ docker/web/modules/
+echo "Committing updated modules"
+#encode the asset content in base64, create request data and save to file
+ENCODED_CONTENT=$(base64 -i docker/web/modules)
+echo '{"message": "updating modules to match reference application version '"$LATEST_REFERENCE_APPLICATION_VERSION"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
+#push the new modules to the repository
+curl -sL \
+  -X PUT \
+ -H "Accept: application/vnd.github+json" \
+ -H "Authorization: Bearer $TOKEN" \
+ -H "X-GitHub-Api-Version: 2022-11-28" \
+ -d @data.json \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules \
+  > response.json
 
+if grep -q "modules" response.json; then
 #update referenceapplicationVersion in pom.xml
 echo "Updating reference application version to $LATEST_REFERENCE_APPLICATION_VERSION"
 yq -i '.project.properties.referenceapplicationVersion = "'"$LATEST_REFERENCE_APPLICATION_VERSION"'"' pom.xml
+else
+  echo "Error committing the changes"
+fi
 
 rm file.zip
 rm -r referenceapplication*
@@ -44,3 +83,5 @@ fi
 
 #clean up
 rm ref_app_versions.txt response.html
+
+sh scripts/update-version-numbers.sh "$TOKEN"
