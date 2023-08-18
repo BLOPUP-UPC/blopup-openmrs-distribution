@@ -33,8 +33,6 @@ if [ -z "$module_to_update" ]; then
     echo "Latest version already installed- $module_name"
   else
     echo "Module update found - $module_name"
-ENCODED_CONTENT=$(base64 -i referenceapplication*/modules/"$module_name"*)
-echo '{"message": "updating '"$module_name"' to match reference application version '"$LATEST_REFERENCE_APPLICATION_VERSION'"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
 
 #get file sha
 curl -sL \
@@ -45,20 +43,20 @@ curl -sL \
 
 SHA=$(jq -r '.sha' response.json)
 
-curl -L \
+curl -sL \
   -X DELETE \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$module_to_update" \
-  -d '{"message":"removing outdated module '"$module_to_update"'", "sha":"'"$SHA"'"}'
+  -d '{"message":"removing outdated module '"$module_to_update"'", "sha":"'"$SHA"'"}' > response.json
   fi
 done < referenceapplication_modules.txt
 
 echo "Committing updated modules"
 #encode the asset content in base64, create request data and save to file
-ENCODED_CONTENT=$(base64 -i docker/web/modules)
-echo '{"message": "updating modules to match reference application version '"$LATEST_REFERENCE_APPLICATION_VERSION"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
+ENCODED_CONTENT=$(base64 -i referenceapplication*/modules/"$module"*)
+echo '{"message": "updating '"$module_name"' to match reference application version '"$LATEST_REFERENCE_APPLICATION_VERSION'"'", "content":"'"$ENCODED_CONTENT"'"}' > data.json
 #push the new modules to the repository
 curl -sL \
   -X PUT \
@@ -66,11 +64,10 @@ curl -sL \
  -H "Authorization: Bearer $TOKEN" \
  -H "X-GitHub-Api-Version: 2022-11-28" \
  -d @data.json \
-  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules \
+  https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$module" \
   > response.json
 
 if grep -q "modules" response.json; then
-#update referenceapplicationVersion in pom.xml
 echo "Updating reference application version to $LATEST_REFERENCE_APPLICATION_VERSION"
 yq -i '.project.properties.referenceapplicationVersion = "'"$LATEST_REFERENCE_APPLICATION_VERSION"'"' pom.xml
 else
