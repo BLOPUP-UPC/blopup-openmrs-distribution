@@ -89,7 +89,6 @@ else
   done <referenceapplication_modules.txt
   if grep -q "modules" response.json; then
     echo "Updating reference application version to $LATEST_REFERENCE_APPLICATION_VERSION"
-    yq -i '.project.properties.referenceapplicationVersion = "'"$LATEST_REFERENCE_APPLICATION_VERSION"'"' pom.xml
   else
     echo "Error committing the changes"
   fi
