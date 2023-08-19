@@ -81,4 +81,4 @@ yq -i '.project.properties.'"$MODULE_NAME"'Version = "'"$NEW_VERSION"'"' pom.xml
 fi
 done
 
-sh scripts/get-latest-reference-application.sh "$TOKEN"
+sh scripts/update-version-numbers.sh "$TOKEN"
