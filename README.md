@@ -128,14 +128,6 @@ docker buildx build --push --platform=[architectures name]--tag [dockerhub-user]
 
 Whenever we have to publish a new image, it is convention to push both the image with the version for the tag and also another one with the `latest` tag. The version of the image is defined in the [pom](pom.xml) file and you have to manually modify it accordingly every time you want to build a new image, following the [semantic versioning](https://semver.org/) principles.
 
-# Database backup
-
-To create a database dump, use the below command:
-```bash
-mysqldump -u root -p [database_name] > [database_name].sql --result-file="${FILENAME_LOCATION}/dump.sql" --skip-lock-tables --skip-add-locks --skip-disable-keys --skip-add-drop-table --column-statistics=0 --skip-create-options --extended-insert --all-databases
-```
-After generating the dump, you can execute the sql commands inside it in the new database.
-
 # Deployment
 
 Our system contains four docker images:
@@ -147,45 +139,7 @@ Our system contains four docker images:
 
 The deployment is done via github actions in the github repository. There is a pipeline for non-prod environments and another one for production.
 
-## SSH
-
-Deployment to the remote host from [this Github Actions pipeline](.github/workflows) will be done securely over SSH using ssh keys. We have created a deployment user in the remote hosts and added an SSH key. The private key content must be stored in a GitHub Secret.
-
-## Deployment user
-
-To create a new user follow the next steps in this section, inside the remote host.
-```bash
-useradd deployment
-mkdir -p /home/deployment/.ssh
-chown -R deployment /home/deployment
-```
-
-After that, add the user to the corresponding group.
-```bash
-sudo usermod -aG docker deployment
-newgrp docker #apply new changes
-```
-
-> **Note**
-> Use `groups` to see if the group was created.
-> For more information about groups, see [here](https://phoenixnap.com/kb/docker-permission-denied)
-
-Now, we have to create an SSH key for the deployment user. 
-```bash
-cd /home/deployment/.ssh
-ssh-keygen -C "$(whoami)@blopup.upc.edu"
-```
-This will prompt you for the key name and the passphrase. Leave the passphrase empty since this ssh keypair is intended to be used in a non-interactive shell (i.e. the pipeline).
-
-Now you have to create an `authorized-keys` file and copy the content of the public key inside. 
-
-```bash
-cat <key_name>.pub > authorized-keys
-```
-
-The content of the private key must be stored in a GitHub secret.
-
-# Deploy to localhost
+# Running the application locally
 
 You just have to run the following command from the root of the repository:
 
@@ -220,24 +174,6 @@ The docker socket proxy uses the host docker socket and exposes it with some con
 
 > **Warning**
 > If you are using colima as a docker runtime in your host machine, you need to make sure that there is a symlink to the colima socket under the `/var/run/docker.sock` path. If the `/var/run/docker.sock` does not exist follow the steps below
-
-### Symlink the default docker socket to the colima socket
-
-```bash
-cd /var/run
-sudo ln -s ~/.colima/docker.sock docker.sock
-```
-
-The colima socket is usually under the `~/.colima/docker.sock` path, but you can run a `colima status` to check if it is there.
-
-```bash
-colima status
-> INFO[0000] colima is running
-> INFO[0000] arch: x86_64
-> INFO[0000] runtime: docker
-> INFO[0000] mountType: sshfs
-> INFO[0000] socket: unix:///Users/your_user_name/.colima/default/docker.sock
-```
 
 # Troubleshooting
 
