@@ -2,6 +2,7 @@
 
 TOKEN=$1
 echo "Updating: " >commit-message.txt
+echo "Updating custom modules created by BLOPUP"
 
 #the name of the repo with the format `blopup-<name>-module`
 for repo_name in \
