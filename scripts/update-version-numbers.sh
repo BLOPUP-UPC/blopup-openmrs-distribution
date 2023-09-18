@@ -16,6 +16,7 @@ if grep -q "updating" commit-message.txt; then
   SHA=$(get_file_sha pom.xml)
   encode_file_and_save_request_data_to_file_with_sha pom.xml "$SHA"
   push_file_to_repo pom.xml
+  echo response.json
 
   COMMIT_SHA=$(jq -r '.commit.sha' response.json)
   echo '{"tag": "'"$NEW_VERSION"'", "message": "'"$COMMIT_MESSAGE"'", "object": "'"$COMMIT_SHA"'", "type": "commit"}' >data.json

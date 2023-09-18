@@ -17,7 +17,7 @@ delete_file_with_sha() {
     -H "Authorization: Bearer $TOKEN" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
     https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$1" \
-    -d '{"message":"removing outdated module - '"$1"'", "sha":"'"$2"'"}'
+    -d '{"message":"removing outdated module - '"$1"'", "sha":"'"$2"'"}' > delete.json
 }
 
 push_file_to_repo() {
