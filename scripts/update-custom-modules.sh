@@ -25,21 +25,19 @@ for repo_name in \
   else
     echo "Updating module - $ASSET_NAME"
     download_asset_to_local_directory "$repo_name" "$ASSET_ID" "$ASSET_NAME"
-    encode_file_and_save_request_data_to_file "$ASSET_NAME" 
-    push_new_file_to_repo "$ASSET_NAME"
-
-    echo "Deleting outdated module - $CURRENT_VERSION"
-    OUTDATED_MODULE_SHA=$(get_file_sha "$CURRENT_VERSION")
-    delete_file_with_sha "$CURRENT_VERSION" "$OUTDATED_MODULE_SHA"
+    encode_file_and_save_request_data_to_file docker/web/modules/"$ASSET_NAME"
+    push_file_to_repo modules/"$ASSET_NAME"
 
     NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
     NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
-
     update_module_version_in_pom "$MODULE_NAME" "$NEW_VERSION"
+
+    echo "Deleting outdated module - $CURRENT_VERSION"
+    OUTDATED_MODULE_SHA=$(get_file_sha modules/"$CURRENT_VERSION")
+    delete_file_with_sha "$CURRENT_VERSION" "$OUTDATED_MODULE_SHA"
 
     printf "%s module to version %s." "$MODULE_NAME" "$NEW_VERSION" >>commit-message.txt
   fi
 done
 
 sh scripts/get-latest-reference-application.sh "$TOKEN"
-
