@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source scripts/functions.sh
+. scripts/functions.sh
 TOKEN=$1
 
 save_reference_application_versions_to_file

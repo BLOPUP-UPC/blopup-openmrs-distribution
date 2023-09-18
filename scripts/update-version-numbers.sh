@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source scripts/functions.sh
+. scripts/functions.sh
 TOKEN=$1
 
 #if one of the modules is updated, increase the project version number in the pom.xml as a minor release
