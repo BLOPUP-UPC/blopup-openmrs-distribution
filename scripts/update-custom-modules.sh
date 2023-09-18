@@ -7,7 +7,7 @@ echo "Updating custom modules created by BLOPUP"
 #the name of the repo with the format `blopup-<name>-module`
 for repo_name in \
   "notification" \
-  "file-upload"; do
+  "file-upload"; do \
   #find current module version
   MODULE_NAME=$(echo "$repo_name" | tr -d '-')
   CURRENT_VERSION=$(find docker/web/modules -name "blopup.$MODULE_NAME-*" | cut -d '/' -f 4)
@@ -50,13 +50,13 @@ for repo_name in \
 
     echo "Module updated - $ASSET_NAME"
 
-    echo "Deleting outdated module - $CURRENT_MODULE"
+    echo "Deleting outdated module - $CURRENT_VERSION"
     #get outdated module sha
     curl -sL \
       -H "Accept: application/vnd.github+json" \
       -H "Authorization: Bearer $TOKEN" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$CURRENT_MODULE" >response.json
+      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$CURRENT_VERSION" >response.json
 
     SHA=$(jq -r '.sha' response.json)
 
@@ -66,7 +66,7 @@ for repo_name in \
       -H "Accept: application/vnd.github+json" \
       -H "Authorization: Bearer $TOKEN" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$CURRENT_MODULE" \
+      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$CURRENT_VERSION" \
       -d '{"message":"removing outdated module", "sha":"'"$SHA"'"}'
 
     NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
