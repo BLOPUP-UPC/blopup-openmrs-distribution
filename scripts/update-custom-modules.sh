@@ -66,7 +66,7 @@ for repo_name in \
       -H "Accept: application/vnd.github+json" \
       -H "Authorization: Bearer $TOKEN" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/""$CURRENT_VERSION" \
+      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$CURRENT_VERSION" \
       -d '{"message":"removing outdated module", "sha":"'"$SHA"'"}'
 
     NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
