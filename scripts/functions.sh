@@ -3,7 +3,7 @@ get_file_sha() {
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $TOKEN" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/"$1" >response.json
+    https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$1" >response.json
 
   SHA=$(jq -r '.sha' response.json)
 
@@ -27,13 +27,13 @@ push_file_to_repo() {
     -H "Authorization: Bearer $TOKEN" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
     -d @data.json \
-    https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/"$1" \
+    https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/"$1" \
     >response.json
 }
 
 encode_file_and_save_request_data_to_file() {
   ENCODED_CONTENT=$(base64 -i "$1")
-  echo '{"message": "updating modules - '"$1"'", "content":"'"$ENCODED_CONTENT"'"}' >data.json
+  echo '{"message": "updating '"$1"'", "content":"'"$ENCODED_CONTENT"'"}' >data.json
 }
 
 encode_file_and_save_request_data_to_file_with_sha() {
@@ -63,12 +63,23 @@ update_module_version_in_pom() {
 }
 
 save_reference_application_versions_to_file() {
- curl -s https://sourceforge.net/projects/openmrs/files/releases/ >response.html
- grep -o "OpenMRS_Reference_Application_[0-9]*\.[0-9]*\.[0-9]*" response.html >ref_app_versions.txt
+  curl -s https://sourceforge.net/projects/openmrs/files/releases/ >response.html
+  grep -o "OpenMRS_Reference_Application_[0-9]*\.[0-9]*\.[0-9]*" response.html >ref_app_versions.txt
 }
 
 download_and_unzip_reference_application_modules() {
-    wget -q https://sourceforge.net/projects/openmrs/files/releases/OpenMRS_Reference_Application_"$1"/referenceapplication-addons-$1.zip/ -O file.zip
-    echo "Unzipping files"
-    unzip -q file
+  wget -q https://sourceforge.net/projects/openmrs/files/releases/OpenMRS_Reference_Application_"$1"/referenceapplication-addons-$1.zip/ -O file.zip
+  echo "Unzipping files"
+  unzip -q file
+}
+
+create_tag_reference_for_commit() {
+    echo '{"ref": "refs/tags/v'"$1"'", "sha": "'"$2"'"}' >data.json
+    curl -sL \
+      -X POST \
+      -H "Accept: application/vnd.github+json" \
+      -H "Authorization: Bearer $TOKEN" \
+      -H "X-GitHub-Api-Version: 2022-11-28" \
+      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/git/refs \
+      -d @data.json >response.json
 }

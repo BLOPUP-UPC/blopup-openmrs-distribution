@@ -1,6 +1,6 @@
-TOKEN=$1
-
+#!/usr/bin/env bash
 source scripts/functions.sh
+TOKEN=$1
 
 save_reference_application_versions_to_file
 #get latest version number from file
@@ -18,9 +18,9 @@ else
 
   #updating SystemAdministration owa file
   echo "Updating System Administration owa file"
-  SYSADMIN_SHA=$(get_file_sha owa/SystemAdministration.owa)
+  SYSADMIN_SHA=$(get_file_sha docker/web/owa/SystemAdministration.owa)
   encode_file_and_save_request_data_to_file_wth_sha SystemAdministration.owa "$SYSADMIN_SHA"
-  push_file_to_repo owa/SystemAdministration.owa
+  push_file_to_repo docker/web/owa/SystemAdministration.owa
 
   #replacing modules with newer version if there is one available
   ls referenceapplication*/modules >referenceapplication_modules.txt
@@ -36,13 +36,13 @@ else
       echo "Committing module version - $latest_module "
       echo "module: $latest_module, " >>commit-message.txt
       encode_file_and_save_request_data_to_file referenceapplication*/modules/"$latest_module"
-      push_file_to_repo modules/"$latest_module"
+      push_file_to_repo docker/web/modules/"$latest_module"
 
       version=$(echo "$latest_module" | cut -d '-' -f 2 | cut -d '.' -f 1-3)
       update_module_version_in_pom "$module_name" "$version"
 
       echo "Deleting outdated module - $current_module"
-      MODULE_SHA=get_file_sha modules/"$current_module"
+      MODULE_SHA=get_file_sha docker/web/modules/"$current_module"
       delete_file_with_sha "$current_module" "$MODULE_SHA"
     fi
   done <referenceapplication_modules.txt
