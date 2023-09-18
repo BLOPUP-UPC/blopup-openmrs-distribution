@@ -61,7 +61,7 @@ for repo_name in \
     SHA=$(jq -r '.sha' response.json)
 
     #delete file from the repository
-    curl -L \
+    curl -sL \
       -X DELETE \
       -H "Accept: application/vnd.github+json" \
       -H "Authorization: Bearer $TOKEN" \
