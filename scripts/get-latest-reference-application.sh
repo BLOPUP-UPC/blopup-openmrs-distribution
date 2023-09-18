@@ -19,7 +19,7 @@ else
   #updating SystemAdministration owa file
   echo "Updating System Administration owa file"
   SYSADMIN_SHA=$(get_file_sha docker/web/owa/SystemAdministration.owa)
-  encode_file_and_save_request_data_to_file_with_sha SystemAdministration.owa "$SYSADMIN_SHA"
+  encode_file_and_save_request_data_to_file_with_sha referenceapplication*/owa/SystemAdministration.owa "$SYSADMIN_SHA"
   push_file_to_repo docker/web/owa/SystemAdministration.owa
 
   #replacing modules with newer version if there is one available

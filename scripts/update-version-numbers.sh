@@ -13,11 +13,8 @@ if grep -q "commit" confirm-commit.txt; then
   yq -i '.project.version = "'"$NEW_VERSION"'"' pom.xml
 
   SHA=$(get_file_sha pom.xml)
-  echo $SHA
   encode_file_and_save_request_data_to_file_with_sha pom.xml "$SHA"
-  echo data.json
   push_file_to_repo pom.xml
-  echo response.json
 
   COMMIT_SHA=$(jq -r '.commit.sha' response.json)
   echo '{"tag": "'"$NEW_VERSION"'", "message": "'"$COMMIT_MESSAGE"'", "object": "'"$COMMIT_SHA"'", "type": "commit"}' >data.json

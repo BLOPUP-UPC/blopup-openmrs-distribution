@@ -37,7 +37,7 @@ encode_file_and_save_request_data_to_file() {
 }
 
 encode_file_and_save_request_data_to_file_with_sha() {
-  ENCODED_CONTENT=$(base64 -i referenceapplication*/owa/"$1")
+  ENCODED_CONTENT=$(base64 -i "$1")
   echo '{"message": "updating '"$1"'", "content":"'"$ENCODED_CONTENT"'", "sha": "'"$2"'"}' >data.json
 }
 
