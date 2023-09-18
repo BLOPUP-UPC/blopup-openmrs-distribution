@@ -46,7 +46,7 @@ Authorization: Basic YWRtaW46QWRtaW4xMjM=
 # dfa881a4-5c88-4057-958b-f583c8edbdef - treatment notes = datatype = text
 # 1a8f49cc-488b-4788-adb3-72c499108772 - drug families = datatype = coded (uuid for another concept)
 
-# there are concepts for each of the drug families (see below for more details on how to create observations with multiple drug families)
+# there are concepts for each of the medication types (see below for more details on how to create observations with multiple drug families)
 
 # curl -X POST "https://blopup-dev.upc.edu/openmrs/ws/rest/v1/concept" -H  "accept: application/json" -H  "content-type: application/json" -d "{  \"names\": [    {      \"name\": \"Treatment\",      \"locale\": \"en\",      \"localePreferred\": true    }  ],  \"datatype\": \"Numeric\",  \"conceptClass\": \"Misc\",  \"set\": false}"
 POST https://blopup-dev.upc.edu/openmrs/ws/rest/v1/concept
@@ -114,14 +114,14 @@ Authorization: Basic YWRtaW46QWRtaW4xMjM=
   "value": 1
 }
 
-###create treatment observation for one drug family
-# add the drug family concept uuid to the value field
-# existing drug families are:
+###create treatment observation for one medication type
+# add the medication type  concept uuid to the value field
+# existing medication types are:
 # f2c7ec86-6fe0-4e6a-bfe9-c73380228177 - Beta Blockers
 # 2146fbb8-8a8a-44f5-81de-2bee8ec4edce - Calcium Channel Blockers
-# 126205BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB - Ace Inhibitors
+# 162298AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA - Ace Inhibitors
 # a7fa1f5f-1ca3-4fe4-b02b-bd1dcc90201b - Diuretics
-# 125412BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB - Angiotensin Receptor Blockers
+# 162299AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA - Angiotensin Receptor Blockers
 # curl -X POST "https://blopup-dev.upc.edu/openmrs/ws/rest/v1/obs" -H  "accept: application/json" -H  "content-type: application/json" -d "{}"
 POST https://blopup-dev.upc.edu/openmrs/ws/rest/v1/obs
 accept: application/json
