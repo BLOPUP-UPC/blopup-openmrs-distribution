@@ -34,7 +34,7 @@ else
       echo "Module $module_name is already up to date"
     else
       echo "Committing module version - $latest_module "
-      echo "module: $latest_module, " >>commit-message.txt
+      echo "commit" >>confirm-commit.txt
       encode_file_and_save_request_data_to_file referenceapplication*/modules/"$latest_module"
       push_file_to_repo docker/web/modules/"$latest_module"
 

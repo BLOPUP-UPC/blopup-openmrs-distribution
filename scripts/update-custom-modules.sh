@@ -2,7 +2,7 @@
 source scripts/functions.sh
 TOKEN=$1
 
-echo "Updating: " >commit-message.txt
+echo "file to check if any commits are done">confirm-commit.txt
 echo "Updating custom modules created by BLOPUP"
 
 #the name of the repo with the format `blopup-<name>-module`
@@ -35,7 +35,7 @@ for repo_name in \
     OUTDATED_MODULE_SHA=$(get_file_sha docker/web/modules/"$CURRENT_VERSION")
     delete_file_with_sha "$CURRENT_VERSION" "$OUTDATED_MODULE_SHA"
 
-    printf "%s module to version %s." "$MODULE_NAME" "$NEW_VERSION" >>commit-message.txt
+    printf "commit" >>confirm-commit.txt
   fi
 done
 
