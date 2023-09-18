@@ -19,7 +19,7 @@ else
   #updating SystemAdministration owa file
   echo "Updating System Administration owa file"
   SYSADMIN_SHA=$(get_file_sha docker/web/owa/SystemAdministration.owa)
-  encode_file_and_save_request_data_to_file_wth_sha SystemAdministration.owa "$SYSADMIN_SHA"
+  encode_file_and_save_request_data_to_file_with_sha SystemAdministration.owa "$SYSADMIN_SHA"
   push_file_to_repo docker/web/owa/SystemAdministration.owa
 
   #replacing modules with newer version if there is one available
@@ -42,7 +42,7 @@ else
       update_module_version_in_pom "$module_name" "$version"
 
       echo "Deleting outdated module - $current_module"
-      MODULE_SHA=get_file_sha docker/web/modules/"$current_module"
+      MODULE_SHA=$(get_file_sha docker/web/modules/"$current_module")
       delete_file_with_sha "$current_module" "$MODULE_SHA"
     fi
   done <referenceapplication_modules.txt
