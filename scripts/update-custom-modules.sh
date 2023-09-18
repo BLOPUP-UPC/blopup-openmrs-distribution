@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source scripts/functions.sh
+
 TOKEN=$1
 echo "Updating: " >commit-message.txt
 echo "Updating custom modules created by BLOPUP"
@@ -7,75 +9,37 @@ echo "Updating custom modules created by BLOPUP"
 #the name of the repo with the format `blopup-<name>-module`
 for repo_name in \
   "notification" \
-  "file-upload"; do \
+  "file-upload"; do
+
   #find current module version
   MODULE_NAME=$(echo "$repo_name" | tr -d '-')
   CURRENT_VERSION=$(find docker/web/modules -name "blopup.$MODULE_NAME-*" | cut -d '/' -f 4)
 
-  # download the module's latest release asset ID and name from github api
-  RELEASE=$(curl -sL \
-    -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer $TOKEN" \
-    -H "X-GitHub-Api-Version: 2022-11-28" \
-    https://api.github.com/repos/BLOPUP-UPC/blopup-"$repo_name"-module/releases/latest)
+  LATEST_RELEASE=$(get_latest_release_for_repo "$repo_name")
+  ASSET_ID=$(echo "$LATEST_RELEASE" | jq -r '.assets[0].id')
+  ASSET_NAME=$(echo "$LATEST_RELEASE" | jq -r '.assets[0].name')
 
-  ASSET_ID=$(echo "$RELEASE" | jq -r '.assets[0].id')
-  ASSET_NAME=$(echo "$RELEASE" | jq -r '.assets[0].name')
-
-  #compare module version with current version
+  #compare latest module version with current version
   if [ "$CURRENT_VERSION" = "$ASSET_NAME" ]; then
     echo "Already using latest module version - $ASSET_NAME"
   else
-    #get the asset from github api passing the asset ID and save it in the modules folder
-    curl -sL \
-      -H "Accept: application/octet-stream" \
-      -H "Authorization: Bearer $TOKEN" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/BLOPUP-UPC/blopup-"$repo_name"-module/releases/assets/"$ASSET_ID" \
-      >docker/web/modules/"$ASSET_NAME"
-
-    #encode the asset content in base64, create request data and save to file
-    ENCODED_CONTENT=$(base64 -i docker/web/modules/"$ASSET_NAME")
-    echo '{"message": "updating modules - '"$ASSET_NAME"'", "content":"'"$ENCODED_CONTENT"'"}' >data.json
-
-    #push the new module to the repository
-    curl -sL \
-      -X PUT \
-      -H "Accept: application/vnd.github+json" \
-      -H "Authorization: Bearer $TOKEN" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      -d @data.json \
-      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$ASSET_NAME" \
-      >response.json
-
-    echo "Module updated - $ASSET_NAME"
+    echo "Updating module - $ASSET_NAME"
+    download_asset_to_local_directory "$repo_name" "$ASSET_ID" "$ASSET_NAME"
+    encode_file_and_save_request_data_to_file "$ASSET_NAME" 
+    push_new_file_to_repo "$ASSET_NAME"
 
     echo "Deleting outdated module - $CURRENT_VERSION"
-    #get outdated module sha
-    curl -sL \
-      -H "Accept: application/vnd.github+json" \
-      -H "Authorization: Bearer $TOKEN" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$CURRENT_VERSION" >response.json
-
-    SHA=$(jq -r '.sha' response.json)
-
-    #delete file from the repository
-    curl -sL \
-      -X DELETE \
-      -H "Accept: application/vnd.github+json" \
-      -H "Authorization: Bearer $TOKEN" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-distribution/contents/docker/web/modules/"$CURRENT_VERSION" \
-      -d '{"message":"removing outdated module", "sha":"'"$SHA"'"}'
+    OUTDATED_MODULE_SHA=$(get_file_sha "$CURRENT_VERSION")
+    delete_file_with_sha "$CURRENT_VERSION" "$OUTDATED_MODULE_SHA"
 
     NEW_VERSION=$(echo "$ASSET_NAME" | cut -d '-' -f 2)
     NEW_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1,2,3)
 
-    echo "Updating $MODULE_NAME module version to $NEW_VERSION"
+    update_module_version_in_pom "$MODULE_NAME" "$NEW_VERSION"
+
     printf "%s module to version %s." "$MODULE_NAME" "$NEW_VERSION" >>commit-message.txt
-    yq -i '.project.properties.'"$MODULE_NAME"'Version = "'"$NEW_VERSION"'"' pom.xml
   fi
 done
 
 sh scripts/get-latest-reference-application.sh "$TOKEN"
+
