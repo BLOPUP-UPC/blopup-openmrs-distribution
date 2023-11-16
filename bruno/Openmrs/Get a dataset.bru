@@ -1,0 +1,20 @@
+meta {
+  name: Get a dataset
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/ws/rest/v1/reportingrest/dataSet/{{dataSetId}}
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  dataSetId: 78b36da4-4dba-47c1-89f1-f21f3e6ac394
+}
