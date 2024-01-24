@@ -1,0 +1,11 @@
+### contactDoctor
+#if you use this ID, you will send a message to Rosa
+POST https://blopup-dev.upc.edu/openmrs/ws/rest/v1/contactDoctor
+accept: application/json
+Content-Type: application/json
+Authorization: Basic YWRtaW46QWRtaW4xMjM=
+
+{
+  "chatId": "6592323167",
+  "message": "This is a test message"
+}
