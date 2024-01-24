@@ -49,7 +49,8 @@
     <reportingcompatibilityVersion>2.0.9</reportingcompatibilityVersion>
     <reportinguiVersion>1.11.0</reportinguiVersion>
     <serialization>
-      <xstreamVersion>0.2.16</xstreamVersion>
+      <xstreamVersion>0
+        .2.16</xstreamVersion>
     </serialization>
     <spaVersion>1.0.9</spaVersion>
     <uicommonsVersion>2.23.0</uicommonsVersion>
