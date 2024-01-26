@@ -1,11 +1,23 @@
 ### contactDoctor
-#if you use this ID, you will send a message to Rosa
+#if you use this ID, you will send a message to Aleh
 POST https://blopup-dev.upc.edu/openmrs/ws/rest/v1/contactDoctor
 accept: application/json
 Content-Type: application/json
 Authorization: Basic YWRtaW46QWRtaW4xMjM=
 
 {
-  "chatId": "6592323167",
-  "message": "This is a test message"
+  "providerUuid": "da1f4685-c16b-41ac-8919-2fc102b0a234",
+  "message": "Un mensaje especial para Aleh"
 }
+
+### createProviderAttribute of type Telegram Chat Id for a provider with a given uuid
+#you need to make sure that an existing provider has an attribute of type Telegram Chat Id (8d87236c-c2cc-11de-8d13-0010c6dffd0f)
+POST https://blopup-dev.upc.edu/openmrs/ws/rest/v1/provider/da1f4685-c16b-41ac-8919-2fc102b0a234/attribute
+accept: application/json
+Content-Type: application/json
+Authorization: Basic YWRtaW46QWRtaW4xMjM=
+
+    {
+    "attributeType": "8d87236c-c2cc-11de-8d13-0010c6dffd0f",
+    "value": "955582371"
+    }
