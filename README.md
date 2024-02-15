@@ -10,20 +10,14 @@ This repo will deploy the OpenMRS application in a remote host via ssh using Git
 # Table of Contents
 * [Development Pre Requisites](#development-pre-requisites) 
   * [Colima (only for mac)](#colima-only-for-mac)
-  * [Buildx](#buildx)
 * [Build our own images](#build-our-own-images)
   * [Updating the modules](#updating-the-modules)
   * [Docker repository](#docker-repository)
-  * [Multi-architecture image push](#multi-architecture-image-push)
-* [Database backup](#database-backup)
 * [Deployment](#deployment)
-  * [SSH](#ssh)
-  * [Deployment user](#deployment-user)
-* [Deploy to localhost](#deploy-to-localhost)
 * [Traefik](#traefik)
   * [Routing](#routing)
   * [Docker socket](#docker-socket)
-    * [Symlink the default docker socket to the colima socket](#symlink-the-default-docker-socket-to-the-colima-socket)
+* [Metrics dashboard - Clasp](#Metrics-dashboard)
 * [Troubleshooting](#troubleshooting)
 
 # Development Pre Requisites
@@ -51,37 +45,22 @@ colima start --memory 8 --cpu 4
 
 For further information about how to install colima, read [this](https://smallsharpsoftwaretools.com/tutorials/use-colima-to-run-docker-containers-on-macos/)
 
-## Buildx
-Buildx is an expanded docker image builder that allows to build multi-architecture images.
-
-To be able to use `buildx` syntax do the following steps below:
-```bash
-curl -LO https://github.com/docker/buildx/releases/download/${VERSION}/buildx-${VERSION}.darwin-${ARCH}
-mkdir -p ~/.docker/cli-plugins
-mv buildx-${VERSION}.darwin-${ARCH} ~/.docker/cli-plugins/docker-buildx
-chmod +x ~/.docker/cli-plugins/docker-buildx
-docker buildx version
-```
-
-To see the latest version of `buildx` you can check it [here](https://github.com/docker/buildx/releases)
-
-Architectures:
-* For M1 chip: `arm64`
-* For intel chip: `amd64`
-
-If it does not work, visit the [official page](https://docs.docker.com/build/buildx/install/) or go to the versions link and manually download the needed version.
-
 # Build our own images
 
 ## Updating the modules
 
-As OpenMRS has a modular architecture, all changes to the backend are applied through introducing new or modifying existing modules. To add a new module or make sure an existing module is up-to-date, you have to complete the following steps:
+As OpenMRS has a modular architecture, all changes to the backend are applied through introducing new or modifying existing modules. 
+To add a new module or make sure an existing module is up-to-date, you have to complete the following steps:
 1. In the module repo
-   * make sure that you have included the `build-and-release-omod-file` workflow (check out the blopup-notification-module repo for an example)
-   * the project name should follow this format: `blopup.<module-name>`. The module name can't contain special characters or dashes.
+   * make sure that you have included the `build-and-release-omod-file` workflow (check out the blopup-file-upload-module repo for an example)
+   * the project name should follow this format: `blopup.<module-name>`. The module name can't contain special characters.
 2. In the `scripts` folder, you need to add the module name to the `update-custom-modules.sh` file
 
-To use our own modules or different version of OpenMRS modules, we should create a new image to control it. OpenMRs provides an SDK to help with this, based on an [openmrs-distro.properties](src/main/resources/openmrs-distro.properties) file. To install said SDK and generate the necessary files for the image, follow this steps (more information [here](https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Installation)):
+## Creating a module 
+
+To use our own modules or different version of OpenMRS modules, we should create a new image to control it. 
+OpenMRs provides an SDK to help with this, based on an [openmrs-distro.properties](src/main/resources/openmrs-distro.properties) file. 
+To install said SDK and generate the necessary files for the image, follow this steps (more information [here](https://wiki.openmrs.org/display/docs/OpenMRS+SDK#OpenMRSSDK-Installation)):
 
 ```bash
 mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
@@ -102,31 +81,6 @@ This will create an `update` folder with some files in it. Then you have to copy
 We have a free [docker hub account](https://hub.docker.com/repository/docker/blopup/openmrs-referenceapplication) to host all docker images.
 
 If needed, ask any of the team members for the user and password.
-
-## Multi-architecture image push
-By default, all images are generated with the local machine architecture. To build compatible images with different architectures, you have to execute this command in the `docker/web` folder.
-
-```bash
-cd docker/web
-```
-
-Do a docker login. Credentials are in Bitwarden.
-```bash
-docker login
-```
-
-To push an image compatible with linux/amd64 and linux/arm64 architecture:
-
-```bash
-docker buildx build --push --platform linux/amd64,linux/arm64 --tag blopup/openmrs-referenceapplication:latest .
-```
-
-The general syntax:
-```bash
-docker buildx build --push --platform=[architectures name]--tag [dockerhub-user]/[image name]:[version] .
-```
-
-Whenever we have to publish a new image, it is convention to push both the image with the version for the tag and also another one with the `latest` tag. The version of the image is defined in the [pom](pom.xml) file and you have to manually modify it accordingly every time you want to build a new image, following the [semantic versioning](https://semver.org/) principles.
 
 # Deployment
 
@@ -174,6 +128,13 @@ The docker socket proxy uses the host docker socket and exposes it with some con
 
 > **Warning**
 > If you are using colima as a docker runtime in your host machine, you need to make sure that there is a symlink to the colima socket under the `/var/run/docker.sock` path. If the `/var/run/docker.sock` does not exist follow the steps below
+
+# Metrics dashboard
+
+The dashboard that show metrics about the projects is hosted in Google Sheets. The dashboard is updated automatically
+every day based on reports from this server accessed by API.
+
+The scripts are stored in the `.appsscript` folder and is managed using the [clasp](https://developers.google.com/apps-script/guides/clasp) tool.
 
 # Troubleshooting
 
