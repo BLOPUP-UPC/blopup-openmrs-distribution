@@ -7,7 +7,6 @@ echo "Updating custom modules created by BLOPUP"
 
 #the name of the repo with the format `blopup-<name>-module`
 for repo_name in \
-  "notification" \
   "file-upload"; do
 
   #find current module version

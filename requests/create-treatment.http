@@ -25,19 +25,56 @@ Authorization: Basic YWRtaW46QWRtaW4xMjM=
 
 # you can include the list of observations in the request to create the encounter or you can create observations later and link with the encounter uuid
 {
-  "encounterDatetime": "2023-12-01T06:08:25.000+0000",
-  "patient": "c20d8ab7-11e8-4d95-ab5d-e6d9c88be0c8",
-  "encounterType": "29d9512b-69aa-47bf-ae16-fb73bb48748a",
-  "location": "",
-  "encounterProviders": [
+  "encounterProviders": [],
+  "encounterType": "Treatment",
+  "obs": [
     {
-      "provider": "0a582491-63d5-4045-81b8-d8806e76c966",
-      "encounterRole": "a0b03050-c99b-11e0-9572-0800200c9a66"
+      "concept": "c1164da7-0b4f-490f-85da-0c4aac4ca8a1",
+      "obsDatetime": "2023-12-12T13:24:26.374Z",
+      "person": "bb227cef-0e4b-4dba-8448-d9bf3eefb154",
+      "value": "Other"
+    },
+    {
+      "concept": "43f8a8f3-6cf9-4a1f-bba5-8ec979f6d0b6",
+      "obsDatetime": "2023-12-12T13:24:26.538Z",
+      "person": "bb227cef-0e4b-4dba-8448-d9bf3eefb154",
+      "value": "Cualquiera"
+    },
+    {
+      "concept": "dfa881a4-5c88-4057-958b-f583c8edbdef",
+      "obsDatetime": "2023-12-12T13:24:26.538Z",
+      "person": "bb227cef-0e4b-4dba-8448-d9bf3eefb154",
+      "value": "notes"
+    },
+    {
+      "concept": "81f60010-961e-4bc5-aa04-435c7ace1ee3",
+      "obsDatetime": "2023-12-12T13:24:26.538Z",
+      "person": "bb227cef-0e4b-4dba-8448-d9bf3eefb154",
+      "value": "1.0"
+    },
+    {
+      "concept": "1a8f49cc-488b-4788-adb3-72c499108772",
+      "encounter": "11f22661-d45a-42c5-9bec-5d9159ea68f0",
+      "groupMembers": [
+        {
+          "concept": "1a8f49cc-488b-4788-adb3-72c499108772",
+          "person": "bb227cef-0e4b-4dba-8448-d9bf3eefb154",
+          "value": "a7fa1f5f-1ca3-4fe4-b02b-bd1dcc90201b"
+        },
+        {
+          "concept": "1a8f49cc-488b-4788-adb3-72c499108772",
+          "obsDatetime": "2023-12-12T13:24:27.665Z",
+          "person": "bb227cef-0e4b-4dba-8448-d9bf3eefb154",
+          "value": "f2c7ec86-6fe0-4e6a-bfe9-c73380228177"
+        }
+      ],
+      "obsDatetime": "2023-12-12T13:24:27.664Z",
+      "person": "bb227cef-0e4b-4dba-8448-d9bf3eefb154"
     }
   ],
-  "visit": "106a6640-7abb-486e-90a5-44df49580dea"
+  "patient": "bb227cef-0e4b-4dba-8448-d9bf3eefb154",
+  "visit": "2dec3069-ec41-4685-9631-611a3a6427a1"
 }
-
 ###create a new concept (observation type)
 # concepts currently existing in dev for treatment are:
 # 43f8a8f3-6cf9-4a1f-bba5-8ec979f6d0b6 - medication name - datatype = text
