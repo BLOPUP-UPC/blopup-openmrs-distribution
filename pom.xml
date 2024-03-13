@@ -18,7 +18,7 @@
     <appuiVersion>1.16.0</appuiVersion>
     <atlasVersion>2.2.6</atlasVersion>
     <attachmentsVersion>2.7.0</attachmentsVersion>
-    <fileuploadVersion>1.0.8</fileuploadVersion>
+    <blopupVersion>1.0.8</blopupVersion>
     <calculationVersion>1.3.0</calculationVersion>
     <coreappsVersion>1.38.0</coreappsVersion>
     <databasebackupVersion>1.3.0</databasebackupVersion>

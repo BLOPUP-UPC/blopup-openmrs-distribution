@@ -89,7 +89,7 @@ get_latest_release_for_repo() {
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $TOKEN" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    https://api.github.com/repos/BLOPUP-UPC/blopup-"$1"-module/releases/latest)"
+    https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-module/releases/latest)"
 }
 
 #######################################
@@ -109,8 +109,8 @@ download_asset_to_local_directory() {
     -H "Accept: application/octet-stream" \
     -H "Authorization: Bearer $TOKEN" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    https://api.github.com/repos/BLOPUP-UPC/blopup-"$1"-module/releases/assets/"$2" \
-    >"docker/web/modules/$3"
+    https://api.github.com/repos/BLOPUP-UPC/blopup-openmrs-module/releases/assets/"$1" \
+    >"docker/web/modules/$2"
 }
 
 #######################################
@@ -120,7 +120,7 @@ download_asset_to_local_directory() {
 #   New version.
 #######################################
 update_module_version_in_pom() {
-  yq -i '.project.properties.'"$1"'Version = "'"$2"'"' pom.xml
+  yq -i '.project.properties.'"blopup"'Version = "'"$1"'"' pom.xml
 }
 
 #######################################
