@@ -2,17 +2,10 @@ name: Deploy to non production environments
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        type: choice
-        description: Select environment
-        options:
-          - blopup-dev.upc.edu
-          - blopup-staging.upc.edu
 
 env:
   SSH_USER: ${{ secrets.SSH_USER }}
-  ENV: ${{ github.event.inputs.environment }}
+  ENV: blopup-dev.upc.edu
 
 permissions: write-all
 
@@ -60,7 +53,7 @@ jobs:
         run: |
           echo "$ENV_FILE" > .env
         env:
-          ENV_FILE: ${{ (contains(env.ENV,'dev') && secrets.DEV_ENV_FILE) || secrets.STAGING_ENV_FILE }}
+          ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
       - name: Copy deploy files to remote host
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
