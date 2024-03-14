@@ -2,7 +2,7 @@
 source scripts/functions.sh
 TOKEN=$1
 
-echo "file to check if any commits are done">confirm-commit.txt
+echo "file to check if any new version should be created">confirm-commit.txt
 echo "Updating custom module created by BLOPUP"
 
   #find current module version
