@@ -21,8 +21,4 @@ RUN chmod +x /usr/local/tomcat/startup.sh
 COPY openmrs-distro.properties /root/openmrs-distro.properties
 COPY Dockerfile /root/Dockerfile
 
-RUN mkdir -p /usr/local/newrelic
-ADD ./newrelic/newrelic.jar /usr/local/newrelic/newrelic.jar
-ADD ./newrelic/newrelic.yml /usr/local/newrelic/newrelic.yml
-
 CMD ["/usr/local/tomcat/startup.sh"]
