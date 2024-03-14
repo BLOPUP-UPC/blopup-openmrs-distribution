@@ -62,7 +62,7 @@ jobs:
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
           scp docker-compose-non-prod.yml remote:/home/$SSH_USER
-          scp docker/web/newrelic remote:/home/$SSH_USER/docker/web/newrelic
+          scp -r docker/web/newrelic remote:/home/$SSH_USER/docker/web/newrelic
           scp .env remote:/home/$SSH_USER
       - name: Remove previous docker containers
         run: |
