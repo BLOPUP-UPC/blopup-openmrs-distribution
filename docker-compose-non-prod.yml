@@ -9,7 +9,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
       MYSQL_USER: ${DATABASE_USERNAME}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-      NEW_RELIC_ENVIRONMENT: "development"
     ports:
       - "3307:3306"
     volumes:
@@ -22,6 +21,7 @@ services:
       DB_PASSWORD: ${DATABASE_PASSWORD}
       DB_CREATE_TABLES: 'true'   # change to 'true' if using an empty database
       DB_AUTO_UPDATE: 'true'     # change to 'true' if using an empty database
+      NEW_RELIC_ENVIRONMENT: "development"
 
 volumes:
   db-data:
