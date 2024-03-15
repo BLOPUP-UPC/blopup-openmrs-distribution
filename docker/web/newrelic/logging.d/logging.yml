@@ -1,0 +1,6 @@
+logs:
+  - name: container log
+    file: /var/lib/docker/containers/*/*.log
+    attributes:
+      type: container
+      env: local
