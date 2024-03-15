@@ -60,21 +60,6 @@ services:
       - /usr/local/tomcat/.OpenMRS/modules/ # used to mount persistent docker volume for modules
       - /usr/local/tomcat/.OpenMRS/owa/     # used to mount persistent docker volume for owa
 
-  agent:
-    container_name: newrelic-infra
-    build:
-      context: .
-      dockerfile: ./newrelic/newrelic-infra.dockerfile
-    cap_add:
-      - SYS_PTRACE
-    network_mode: host
-    pid: host
-    privileged: true
-    volumes:
-      - "/:/host:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    restart: unless-stopped
-
 volumes:
   web-data:
   reverse-proxy-data:

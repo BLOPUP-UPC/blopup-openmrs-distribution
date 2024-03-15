@@ -8,6 +8,5 @@ services:
       DB_HOST: host.docker.internal
       DB_CREATE_TABLES: 'false'   # change to 'true' if using an empty database
       DB_AUTO_UPDATE: 'false'     # change to 'true' if using an empty database
-      NEW_RELIC_ENVIRONMENT: "production"
     extra_hosts:
       - host.docker.internal:host-gateway

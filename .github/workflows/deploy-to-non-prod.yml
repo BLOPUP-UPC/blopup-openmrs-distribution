@@ -19,10 +19,6 @@ jobs:
         run: |
           chmod +x scripts/*.sh
           scripts/update-custom-modules.sh ${{ secrets.BLOPUP_TOKEN }}
-      - name: Replace New relic license key
-        run: |
-          chmod +x scripts/*.sh
-          scripts/replace-new-relic-license.sh ${{ secrets.NEW_RELIC_LICENSE_KEY }}
       - name: install buildx
         id: buildx
         uses: crazy-max/ghaction-docker-buildx@v1
@@ -62,8 +58,6 @@ jobs:
         run: |
           scp docker-compose.yml remote:/home/$SSH_USER
           scp docker-compose-non-prod.yml remote:/home/$SSH_USER
-          ssh remote mkdir -p /home/$SSH_USER/docker/web/newrelic
-          scp -r docker/web/newrelic remote:/home/$SSH_USER
           scp .env remote:/home/$SSH_USER
       - name: Remove previous docker containers
         run: |
