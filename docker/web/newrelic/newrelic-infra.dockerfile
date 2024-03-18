@@ -1,3 +1,3 @@
 FROM newrelic/infrastructure:latest
-ADD newrelic-infra.yml /etc/newrelic-infra.yml
-ADD logging.d /etc/newrelic-infra/logging.d
+ADD newrelic/newrelic-infra.yml /etc/newrelic-infra.yml
+ADD newrelic/logging.d /etc/newrelic-infra/logging.d
