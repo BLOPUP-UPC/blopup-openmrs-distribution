@@ -64,7 +64,7 @@ services:
     container_name: newrelic-infra
     build:
       context: .
-      dockerfile: ./docker/web/newrelic/newrelic-infra.dockerfile
+      dockerfile: newrelic-infra.dockerfile
     cap_add:
       - SYS_PTRACE
     network_mode: host

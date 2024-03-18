@@ -40,6 +40,9 @@ jobs:
           scp docker-compose.yml remote:/home/$SSH_USER
           scp docker-compose-prod.yml remote:/home/$SSH_USER
           scp .env remote:/home/$SSH_USER
+          scp docker/web/newrelic/newrelic-infra.yml remote:/home/$SSH_USER
+          scp docker/web/newrelic/newrelic-infra.dockerfile remote:/home/$SSH_USER
+          scp docker/web/newrelic/logging.d remote:/home/$SSH_USER
       - name: Remove previous docker containers
         run: |
           scp safe-stop-container remote:/home/$SSH_USER
