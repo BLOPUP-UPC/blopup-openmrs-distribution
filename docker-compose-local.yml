@@ -50,7 +50,12 @@ services:
       MODULE_WEB_ADMIN: "true" # allow web admin on OpenMRS
     ports:
       - "8080:8080"
+    logging:
+      driver: "json-file"
+      options:
+        labels: application_name
     labels:
+      - application_name=tomcat
       - traefik.enable=true
       - traefik.http.routers.web.rule=Host(`${DOMAIN}`, `10.0.2.2`)
     volumes:
