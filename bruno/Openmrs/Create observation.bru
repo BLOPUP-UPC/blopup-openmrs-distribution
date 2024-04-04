@@ -1,0 +1,33 @@
+meta {
+  name: Create observation
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{base_url}}/openmrs/ws/rest/v1/obs/
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "encounter": "3cd6125b-9900-4a24-a095-d1f261f636a0",
+    "concept": "1a8f49cc-488b-4788-adb3-72c499108772",
+    "person": "8dcc9da7-019b-4abe-a4e3-38580a9b8fdd",
+    "obsDatetime": "2024-01-16T11:47:12.000+0000", 
+    "groupMembers": [
+      {
+      "concept": "1a8f49cc-488b-4788-adb3-72c499108772",
+      "value": "467f7d87-8c2e-4519-9e81-048c2c7824fd",
+      "obsDatetime": "2024-01-16T11:47:12.000+0000", 
+      "person": "8dcc9da7-019b-4abe-a4e3-38580a9b8fdd"
+      }
+    ]
+  }
+}

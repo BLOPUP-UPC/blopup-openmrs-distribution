@@ -1,0 +1,23 @@
+meta {
+  name: Edit person - Add attribute
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{base_url}}/openmrs/ws/rest/v1/provider/2775ad68-1a28-450f-a270-6ac5d0120636/attribute
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "attributeType": "f4778183-b518-4842-946a-794fbff0e2e1",
+    "value": "080809579"
+  }
+}

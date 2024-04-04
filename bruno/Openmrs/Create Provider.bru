@@ -1,0 +1,30 @@
+meta {
+  name: Create Provider
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{base_url}}/openmrs/ws/rest/v1/provider
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "person": "0bf72192-5770-4a05-88c1-0edbc84f7f2c",
+    "identifier": "doctor",
+    "attributes": [
+      {
+        "attributeType": "8d87236c-c2cc-11de-8d13-0010c6dffd0f",
+        "value": "1056744"
+      }
+    ],
+    "retired": false
+  }
+}

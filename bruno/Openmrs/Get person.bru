@@ -1,0 +1,16 @@
+meta {
+  name: Get person
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{base_url}}/openmrs/ws/rest/v1/person/af7c3340-0503-11e3-8ffd-0800200c9a66
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}

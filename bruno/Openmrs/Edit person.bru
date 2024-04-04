@@ -1,0 +1,22 @@
+meta {
+  name: Edit person
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{base_url}}/openmrs/ws/rest/v1/person/18e50ca8-98a8-4b47-96b3-252abf70b4dd
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "gender": "M"
+  }
+}

@@ -1,0 +1,16 @@
+meta {
+  name: Get Encounter
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}/openmrs/ws/rest/v1/encounter/e295ad11-50e3-45ca-bccd-14ee2005508d
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}

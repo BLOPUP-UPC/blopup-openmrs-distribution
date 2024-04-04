@@ -1,0 +1,16 @@
+meta {
+  name: Get observation
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/openmrs/ws/rest/v1/obs/88d55868-185f-4659-9c8d-b655c3579c65
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}

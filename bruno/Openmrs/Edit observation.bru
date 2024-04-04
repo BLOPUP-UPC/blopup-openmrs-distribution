@@ -1,0 +1,27 @@
+meta {
+  name: Edit observation
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/openmrs/ws/rest/v1/obs/88d55868-185f-4659-9c8d-b655c3579c65
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "groupMembers": [
+      {
+      "uuid": "09a08554-f6e3-40e9-863c-502b6867da82",
+      "value": "87e51329-cc96-426d-bc71-ccef8892ce71"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Get provider attribute
+  type: http
+  seq: 20
+}
+
+get {
+  url: {{base_url}}/openmrs/ws/rest/v1/locations
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "attributeType": "f4778183-b518-4842-946a-794fbff0e2e1",
+    "value": "0989264748"
+  }
+}

@@ -1,0 +1,21 @@
+meta {
+  name: Get visit
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{base_url}}/openmrs/ws/rest/v1/visit?patient=bb227cef-0e4b-4dba-8448-d9bf3eefb154&v=custom:(uuid,location:ref,visitType:ref,startDatetime,stopDatetime,encounters:full)
+  body: none
+  auth: basic
+}
+
+query {
+  patient: bb227cef-0e4b-4dba-8448-d9bf3eefb154
+  v: custom:(uuid,location:ref,visitType:ref,startDatetime,stopDatetime,encounters:full)
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}

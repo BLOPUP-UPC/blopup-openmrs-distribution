@@ -1,0 +1,20 @@
+meta {
+  name: Get providers
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{base_url}}/openmrs/ws/rest/v1/provider?q=registered%20doctor
+  body: none
+  auth: basic
+}
+
+query {
+  q: registered%20doctor
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}

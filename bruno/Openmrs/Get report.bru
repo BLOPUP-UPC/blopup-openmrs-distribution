@@ -1,0 +1,16 @@
+meta {
+  name: Get report
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/openmrs/ws/rest/v1/reportingrest/dataSet/78b36da4-4dba-47c1-89f1-f21f3e6ac394
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}

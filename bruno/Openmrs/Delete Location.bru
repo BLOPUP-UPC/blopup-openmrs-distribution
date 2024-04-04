@@ -1,0 +1,16 @@
+meta {
+  name: Delete Location
+  type: http
+  seq: 17
+}
+
+delete {
+  url: {{base_url}}/openmrs/ws/rest/v1/encounter/37c23b42-1565-4c52-875b-877c5ff2a6db
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Update Encounter
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/openmrs/ws/rest/v1/encounter/e295ad11-50e3-45ca-bccd-14ee2005508d
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "obs": [
+      {
+        "uuid": "4e642c9d-d7ad-4fef-82d5-c8141361613b",
+        "value": "Uno"
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+meta {
+  name: Delete Encounter
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{base_url}}/openmrs/ws/rest/v1/location/b1a8b05e-3542-4037-bbd3-998ee9c40574
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
