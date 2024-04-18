@@ -1,0 +1,23 @@
+meta {
+  name: Get active visit
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{base_url}}/ws/rest/v1/visit?patient=8f44c8f2-2f40-4601-9ff2-b12aea1fb932&includeInactive=false&v=full
+  body: none
+  auth: basic
+}
+
+query {
+  patient: 8f44c8f2-2f40-4601-9ff2-b12aea1fb932
+  includeInactive: false
+  v: full
+  ~v: custom:(uuid,patient:ref,location:ref,visitType:ref,startDatetime,stopDatetime,encounters:full)
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
