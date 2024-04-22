@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: {{base_url}}/openmrs/ws/rest/v1/provider/2775ad68-1a28-450f-a270-6ac5d0120636/attribute
+  url: {{base_url}}/ws/rest/v1/location/?tag=Login Location&v=full
   body: json
   auth: basic
+}
+
+query {
+  tag: Login Location
+  v: full
 }
 
 auth:basic {
