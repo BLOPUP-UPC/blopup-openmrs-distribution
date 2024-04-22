@@ -1,0 +1,21 @@
+meta {
+  name: Search patient
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{base_url}}/ws/rest/v1/patient?q=paco&v=full
+  body: none
+  auth: basic
+}
+
+query {
+  q: paco
+  v: full
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
