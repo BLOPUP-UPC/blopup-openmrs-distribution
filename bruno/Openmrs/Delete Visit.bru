@@ -1,0 +1,16 @@
+meta {
+  name: Delete Visit
+  type: http
+  seq: 23
+}
+
+delete {
+  url: {{base_url}}/ws/rest/v1/visit/8da7f752-8d58-4f3a-9119-0e59521d7edf
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
